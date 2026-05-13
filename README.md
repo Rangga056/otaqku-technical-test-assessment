@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# otaQku Quiz & Report App
 
-## Getting Started
+An interactive quiz platform built with Next.js 15, Supabase, and NextAuth.js. This application allows users to take quizzes, view instant analytics, and download performance reports as PDF.
 
-First, run the development server:
+## 🚀 Tech Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Framework**: Next.js 15 (App Router)
+- **Runtime**: Bun
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Database**: Supabase (PostgreSQL)
+- **Auth**: NextAuth.js v5 (Auth.js)
+- **State Management**: Zustand
+- **Validation**: Zod
+- **Testing**: Vitest + React Testing Library
+- **PDF Generation**: @react-pdf/renderer
+- **Charts**: Recharts
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🏗️ Architecture Choices
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **N+1 Prevention**: Data fetching uses nested Supabase selection to retrieve quizzes, questions, and options in a single roundtrip. Bulk inserts are used for quiz submissions.
+- **Security (RLS Bridge)**: Although using NextAuth for session management, we maintain Row Level Security (RLS) in Supabase by injecting the `user_id` into the Postgres session via a custom RPC call (`set_session_user`) within Server Actions.
+- **Strict TDD**: Core logic (scoring engine, state management) is developed using a test-driven approach.
+- **No ORM**: We use the native Supabase JS client for lightweight and transparent database interactions.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Local Setup
 
-## Learn More
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd otaQku_technical_test
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Install dependencies**:
+   ```bash
+   bun install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Configure Environment Variables**:
+   Copy `.env.local.example` to `.env.local` and fill in your Supabase and NextAuth credentials.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. **Setup Database**:
+   Run the SQL found in `supabase/migrations/` and `supabase/seed.sql` in your Supabase SQL Editor.
 
-## Deploy on Vercel
+5. **Run Development Server**:
+   ```bash
+   bun dev
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+6. **Run Tests**:
+   ```bash
+   bun test
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📝 Limitations & Trade-offs
+
+- **PDF Generation**: Currently uses `@react-pdf/renderer` for server-side generation. Complex client-side charts are represented as textual data in the report to ensure high-quality vector rendering in the PDF.
+- **Rule-based Analytics**: Performance categories (Beginner, Intermediate, Advanced) are determined by fixed percentage thresholds as per initial requirements.
