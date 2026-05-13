@@ -2,6 +2,11 @@
 
 An interactive quiz platform built with Next.js 15, Supabase, and NextAuth.js. This application allows users to take quizzes, view instant analytics, and download performance reports as PDF.
 
+## 📚 Documentation
+
+- [User Flow Documentation](docs/user-flow.md) - Understanding the application from a user's perspective.
+- [API & Backend Documentation](docs/api-backend.md) - Deep dive into the technical implementation and data structures.
+
 ## 🚀 Tech Stack
 
 - **Framework**: Next.js 15 (App Router)
