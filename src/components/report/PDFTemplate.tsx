@@ -1,19 +1,31 @@
-import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer'
+import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer'
 
 const styles = StyleSheet.create({
-  page: { padding: 40, fontFamily: 'Helvetica' },
-  header: { marginBottom: 20 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 5 },
-  subtitle: { fontSize: 14, color: '#666', marginBottom: 20 },
-  section: { marginBottom: 20 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 10, borderBottom: 1, paddingBottom: 5 },
-  scoreBox: { padding: 15, backgroundColor: '#f0f4f8', borderRadius: 5, marginBottom: 20 },
-  scoreText: { fontSize: 32, fontWeight: 'bold', color: '#2563eb' },
-  categoryText: { fontSize: 14, fontWeight: 'bold', marginTop: 5 },
-  tableRow: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: '#eee', paddingVertical: 5 },
-  tableCol: { flex: 1, fontSize: 10 },
-  correct: { color: '#10b981' },
-  incorrect: { color: '#ef4444' }
+  page: { padding: 48, fontFamily: 'Helvetica', backgroundColor: '#FFFFFF' },
+  header: { marginBottom: 32 },
+  title: { fontSize: 32, fontWeight: 'bold', color: '#202124', marginBottom: 8 },
+  subtitle: { fontSize: 14, color: '#5F6368', marginBottom: 24 },
+  
+  statsGrid: { flexDirection: 'row', gap: 12, marginBottom: 32 },
+  statCard: { flex: 1, padding: 16, backgroundColor: '#F8F9FA', borderRadius: 8, border: '1pt solid #DADCE0' },
+  statLabel: { fontSize: 8, fontWeight: 'bold', color: '#5F6368', marginBottom: 4, textTransform: 'uppercase' },
+  statValue: { fontSize: 20, fontWeight: 'bold', color: '#202124' },
+  statValuePrimary: { fontSize: 20, fontWeight: 'bold', color: '#4285F4' },
+
+  section: { marginBottom: 24 },
+  sectionTitle: { fontSize: 16, fontWeight: 'bold', color: '#202124', marginBottom: 16, paddingBottom: 8, borderBottom: '1pt solid #DADCE0' },
+  
+  tableHeader: { flexDirection: 'row', backgroundColor: '#F8F9FA', padding: 12, borderRadius: 4, marginBottom: 8 },
+  tableRow: { flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: '#F1F3F4' },
+  tableColNum: { width: '10%', fontSize: 10, color: '#5F6368' },
+  tableColQuestion: { width: '65%', fontSize: 10, color: '#202124' },
+  tableColResult: { width: '25%', fontSize: 10, fontWeight: 'bold', textAlign: 'right' },
+  
+  correct: { color: '#34A853' },
+  incorrect: { color: '#EA4335' },
+  
+  footer: { position: 'absolute', bottom: 48, left: 48, right: 48, borderTop: '1pt solid #DADCE0', paddingTop: 16, textAlign: 'center' },
+  footerText: { fontSize: 8, color: '#999' }
 })
 
 export function PDFReport({ attempt }: { attempt: any }) {
@@ -23,32 +35,38 @@ export function PDFReport({ attempt }: { attempt: any }) {
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <Text style={styles.title}>Quiz Performance Report</Text>
-          <Text style={styles.subtitle}>{attempt.quizzes.title}</Text>
+          <Text style={styles.title}>Performance Analysis</Text>
+          <Text style={styles.subtitle}>{attempt.quizzes.title} • Completed on {new Date(attempt.created_at).toLocaleDateString()}</Text>
         </View>
 
-        <View style={styles.scoreBox}>
-          <Text style={styles.scoreText}>{percentage}%</Text>
-          <Text style={styles.categoryText}>Level: {attempt.category}</Text>
-          <Text style={{ fontSize: 12, marginTop: 10 }}>
-            Scored {attempt.total_score} out of {attempt.max_score} points
-          </Text>
+        <View style={styles.statsGrid}>
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Final Score</Text>
+            <Text style={styles.statValuePrimary}>{percentage}%</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Category</Text>
+            <Text style={styles.statValue}>{attempt.category}</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Points</Text>
+            <Text style={styles.statValue}>{attempt.total_score}/{attempt.max_score}</Text>
+          </View>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Answer Breakdown</Text>
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCol, { flex: 0.1 }]}>#</Text>
-            <Text style={[styles.tableCol, { flex: 0.6 }]}>Question</Text>
-            <Text style={[styles.tableCol, { flex: 0.3 }]}>Result</Text>
+          <Text style={styles.sectionTitle}>Detailed Breakdown</Text>
+          <View style={styles.tableHeader}>
+            <Text style={styles.tableColNum}>#</Text>
+            <Text style={styles.tableColQuestion}>Question</Text>
+            <Text style={styles.tableColResult}>Result</Text>
           </View>
           {attempt.attempt_answers.map((answer: any, index: number) => (
             <View key={answer.id} style={styles.tableRow}>
-              <Text style={[styles.tableCol, { flex: 0.1 }]}>{index + 1}</Text>
-              <Text style={[styles.tableCol, { flex: 0.6 }]}>{answer.questions.question_text}</Text>
+              <Text style={styles.tableColNum}>{index + 1}</Text>
+              <Text style={styles.tableColQuestion}>{answer.questions.question_text}</Text>
               <Text style={[
-                styles.tableCol, 
-                { flex: 0.3 }, 
+                styles.tableColResult, 
                 answer.is_correct ? styles.correct : styles.incorrect
               ]}>
                 {answer.is_correct ? 'Correct' : 'Incorrect'}
@@ -57,9 +75,12 @@ export function PDFReport({ attempt }: { attempt: any }) {
           ))}
         </View>
 
-        <Text style={{ fontSize: 10, color: '#999', marginTop: 40, textAlign: 'center' }}>
-          Generated by otaQku Quiz App on {new Date().toLocaleDateString()}
-        </Text>
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>
+            This report was automatically generated by otaQku Intelligence. 
+            Verification ID: {attempt.id}
+          </Text>
+        </View>
       </Page>
     </Document>
   )

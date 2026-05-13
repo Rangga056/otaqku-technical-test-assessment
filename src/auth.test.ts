@@ -2,7 +2,14 @@ import { describe, it, expect, vi } from 'vitest'
 import bcrypt from 'bcryptjs'
 
 // Mocking Supabase and bcrypt for unit testing authorize logic
-vi.mock('@/lib/supabase', () => ({
+vi.mock('@/lib/db', () => ({
+  supabaseClient: {
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => Promise.resolve({ data: [], error: null }))
+      }))
+    }))
+  },
   getServiceSupabase: vi.fn(() => ({
     from: vi.fn(() => ({
       select: vi.fn(() => ({

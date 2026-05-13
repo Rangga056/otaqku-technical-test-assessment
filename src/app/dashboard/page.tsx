@@ -1,5 +1,5 @@
 import { auth } from "@/auth"
-import { getAuthenticatedSupabase, supabase } from "@/lib/supabase"
+import { getAuthenticatedSupabase, supabaseClient } from "@/lib/db"
 import { redirect } from "next/navigation"
 import { QuizCard } from "@/components/quiz/QuizCard"
 import { BarChart, Clock, Trophy, Target } from "lucide-react"
@@ -29,7 +29,7 @@ export default async function DashboardPage() {
     .limit(5)
 
   // 3. Fetch Available Quizzes
-  const { data: quizzes } = await supabase
+  const { data: quizzes } = await supabaseClient
     .from("quizzes")
     .select(`
       *,

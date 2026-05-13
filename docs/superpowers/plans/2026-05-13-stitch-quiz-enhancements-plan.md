@@ -16,38 +16,25 @@
 - Modify: `package.json`
 
 - [ ] **Step 1: Add required dependencies**
-Run: `npm install framer-motion canvas-confetti && npm install -D @types/canvas-confetti`
+Run: `bun add canvas-confetti && bun add -d @types/canvas-confetti`
 - [ ] **Step 2: Commit**
 ```bash
-git commit -m "chore: add framer-motion and canvas-confetti"
+git commit -m "chore: add canvas-confetti via bun"
 ```
 
-### Task 2: Hero Visual Assets (Nano Banana)
-
-**Files:**
-- Create: `public/hero-schematic.png`
-
-- [ ] **Step 1: Generate technical illustration**
-Use `mcp_nanobanana_generate_image` with prompt: "A minimalist Swiss-style architectural technical schematic of a data processing unit, clean lines, blueprint blue and white, professional, high-fidelity, 1024x1024"
-- [ ] **Step 2: Save to public folder**
-- [ ] **Step 3: Commit**
-```bash
-git commit -m "assets: add technical hero illustration"
-```
-
-### Task 3: Interactive Hero Card Enhancement
+### Task 2: Interactive Hero Card Enhancement
 
 **Files:**
 - Create: `src/components/layout/HeroCard.tsx`
 - Modify: `src/app/page.tsx`
 
 - [ ] **Step 1: Create 3D HeroCard component**
-Implement mouse-tracking 3D tilt with `framer-motion`. Embed `recharts` AreaChart and the generated schematic.
+Implement mouse-tracking 3D tilt with pure CSS (transform: perspective/rotateX/rotateY) and React `onMouseMove`. Embed a `recharts` AreaChart with interactive tooltips.
 - [ ] **Step 2: Integrate HeroCard into HomePage**
-Replace the static card in `src/app/page.tsx` with the new `HeroCard`.
+Replace the static card in `src/app/page.tsx` with the new interactive `HeroCard`.
 - [ ] **Step 3: Commit**
 ```bash
-git commit -m "feat: add interactive 3D hero card with real chart"
+git commit -m "feat: add interactive 3D hero card with real recharts graph"
 ```
 
 ### Task 4: Dynamic Percentile & Statistics Logic

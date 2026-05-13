@@ -1,6 +1,6 @@
 "use server"
 
-import { getServiceSupabase } from "@/lib/supabase"
+import { getServiceSupabase } from "@/lib/db"
 import bcrypt from "bcryptjs"
 import { z } from "zod"
 import { redirect } from "next/navigation"

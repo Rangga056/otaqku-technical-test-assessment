@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, BarChart3, FileText, Zap, Sparkles, TrendingUp } from "lucide-react"
+import { BarChart3, FileText, Zap } from "lucide-react"
+import { HeroCard } from "@/components/layout/HeroCard"
 
 export default function HomePage() {
   return (
@@ -32,47 +33,9 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right Visual (Floating Card) */}
+            {/* Right Visual (Interactive 3D Card) */}
             <div className="relative hidden lg:block animate-in fade-in slide-in-from-right duration-1000 delay-200">
-              <div className="relative z-10 stitch-card p-10 bg-white rotate-[-2deg] shadow-2xl scale-110 translate-x-12">
-                <div className="flex justify-between items-start mb-8">
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-[#5F6368] mb-1">Global Performance</p>
-                    <h2 className="text-4xl font-medium text-[#202124]">94.2%</h2>
-                  </div>
-                  <div className="w-12 h-12 rounded-xl bg-[#E8F0FE] flex items-center justify-center text-[#4285F4]">
-                    <TrendingUp size={24} />
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-xs font-medium">
-                      <span className="text-[#5F6368]">Algorithm Efficiency</span>
-                      <span className="text-[#202124]">23ms</span>
-                    </div>
-                    <div className="h-1.5 w-full bg-[#F8F9FA] rounded-full overflow-hidden">
-                      <div className="h-full bg-[#4285F4] w-[85%]" />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-xs font-medium">
-                      <span className="text-[#5F6368]">Cognitive Load Index</span>
-                      <span className="text-[#202124]">Low</span>
-                    </div>
-                    <div className="h-1.5 w-full bg-[#F8F9FA] rounded-full overflow-hidden">
-                      <div className="h-full bg-[#34A853] w-[15%]" />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-10 pt-10 border-t border-[#DADCE0]">
-                  <div className="w-full h-32 bg-[#F8F9FA] rounded-xl flex items-center justify-center border border-dashed border-[#DADCE0]">
-                    <BarChart3 className="text-[#DADCE0]" size={48} />
-                  </div>
-                </div>
-              </div>
+              <HeroCard />
 
               {/* Decorative elements */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] bg-gradient-to-br from-[#4285F4]/10 to-transparent rounded-full blur-[100px] -z-10" />
@@ -80,6 +43,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
 
       {/* Features Section */}
       <section className="py-32 bg-white">

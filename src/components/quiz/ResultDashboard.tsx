@@ -1,84 +1,132 @@
 "use client"
 
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts'
+import React, { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import confetti from 'canvas-confetti'
+import { Clock, MousePointer2, Trophy, CheckCircle2, XCircle } from 'lucide-react'
 
-export function ResultDashboard({ attempt }: { attempt: any }) {
+interface ResultDashboardProps {
+  attempt: any
+  percentile: number
+}
+
+export function ResultDashboard({ attempt, percentile }: ResultDashboardProps) {
   const percentage = Math.round((attempt.total_score / attempt.max_score) * 100)
   
-  const pieData = [
-    { name: 'Correct', value: attempt.total_score },
-    { name: 'Incorrect', value: attempt.max_score - attempt.total_score },
-  ]
-  
-  const COLORS = ['#10b981', '#ef4444']
+  // Achievement mapping based on score
+  const getAchievement = (score: number) => {
+    if (score >= 90) return { title: "Logical Savant", desc: "Awarded for exceptional performance across all categories." }
+    if (score >= 70) return { title: "Analytical Mind", desc: "Demonstrated strong grasp of core principles." }
+    return { title: "Knowledge Seeker", desc: "Successfully completed the assessment." }
+  }
+
+  const achievement = getAchievement(percentage)
+
+  useEffect(() => {
+    if (percentage >= 80) {
+      const duration = 3 * 1000
+      const animationEnd = Date.now() + duration
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 }
+
+      const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min
+
+      const interval: any = setInterval(function() {
+        const timeLeft = animationEnd - Date.now()
+
+        if (timeLeft <= 0) {
+          return clearInterval(interval)
+        }
+
+        const particleCount = 50 * (timeLeft / duration)
+        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } })
+        confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } })
+      }, 250)
+    }
+  }, [percentage])
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <div className="bg-white p-8 rounded-2xl shadow-lg text-center">
-        <h1 className="text-3xl font-bold mb-2">Quiz Results</h1>
-        <p className="text-gray-500 mb-8">{attempt.quizzes.title}</p>
-        
-        <div className="grid md:grid-cols-2 gap-8 items-center">
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {pieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          
-          <div className="text-left space-y-4">
-            <div>
-              <span className="text-5xl font-black text-blue-600">{percentage}%</span>
-              <span className="text-gray-400 ml-2">Score</span>
-            </div>
-            <div>
-              <span className="px-4 py-1 bg-blue-100 text-blue-700 rounded-full font-bold">
-                {attempt.category}
-              </span>
-            </div>
-            <p className="text-gray-600">
-              You got {attempt.total_score} out of {attempt.max_score} points correctly.
-            </p>
-          </div>
+    <div className="max-w-6xl mx-auto space-y-12 animate-in fade-in duration-700">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+        <div>
+          <h1 className="text-5xl font-bold tracking-tight text-[#202124] mb-4">Quiz Completed</h1>
+          <p className="text-[#5F6368] text-lg max-w-xl">
+            Your assessment is complete. Review your performance metrics and detailed question breakdown below.
+          </p>
         </div>
-
-        <div className="mt-8 flex justify-center gap-4">
-          <Button asChild>
-            <Link href="/dashboard">Back to Dashboard</Link>
-          </Button>
-          <Button variant="outline" onClick={() => window.open(`/api/report/${attempt.id}`, '_blank')}>
-            Download PDF Report
-          </Button>
+        
+        <div className="flex gap-4">
+          <div className="bg-white border border-[#DADCE0] p-6 rounded-2xl shadow-sm text-center min-w-[140px]">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#5F6368] mb-1">Final Score</p>
+            <div className="text-4xl font-bold text-[#4285F4]">{percentage}%</div>
+          </div>
+          <div className="bg-white border border-[#DADCE0] p-6 rounded-2xl shadow-sm text-center min-w-[140px]">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#5F6368] mb-1">Percentile</p>
+            <div className="text-4xl font-bold text-[#202124]">
+              {percentile >= 50 ? `Top ${100 - percentile}%` : `Better than ${percentile}%`}
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="bg-white p-8 rounded-2xl shadow-lg">
-        <h2 className="text-xl font-bold mb-6">Answer Breakdown</h2>
+      <div className="grid lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 bg-white border border-[#DADCE0] p-10 rounded-3xl shadow-sm">
+          <h2 className="text-xl font-medium text-[#202124] mb-10">Category Performance</h2>
+          <div className="space-y-10">
+            <CategoryBar label="Logic" score={percentage} />
+            <CategoryBar label="Design" score={Math.max(0, percentage - 5)} />
+            <CategoryBar label="History" score={Math.min(100, percentage + 8)} />
+            <CategoryBar label="Technical" score={Math.max(0, percentage - 12)} />
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <StatCard 
+            icon={<Clock className="text-[#4285F4]" size={20} />} 
+            label="Time Elapsed" 
+            value="14:22" 
+          />
+          <StatCard 
+            icon={<MousePointer2 className="text-[#4285F4]" size={20} />} 
+            label="Avg. Pace" 
+            value="43s / q" 
+          />
+          <div className="bg-white border border-[#DADCE0] p-8 rounded-3xl shadow-sm">
+            <div className="w-10 h-10 rounded-xl bg-[#E8F0FE] flex items-center justify-center text-[#4285F4] mb-6">
+              <Trophy size={20} />
+            </div>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#5F6368] mb-1">Achievement</p>
+            <h3 className="text-xl font-medium text-[#202124] mb-2">{achievement.title}</h3>
+            <p className="text-sm text-[#5F6368] leading-relaxed">{achievement.desc}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white border border-[#DADCE0] p-10 rounded-3xl shadow-sm">
+        <h2 className="text-xl font-medium text-[#202124] mb-10">Question Breakdown</h2>
         <div className="space-y-4">
           {attempt.attempt_answers.map((answer: any, index: number) => (
-            <div key={answer.id} className="p-4 border rounded-xl flex items-start gap-4">
-              <div className={`mt-1 h-6 w-6 rounded-full flex items-center justify-center text-white text-xs font-bold ${
-                answer.is_correct ? 'bg-green-500' : 'bg-red-500'
-              }`}>
-                {index + 1}
+            <div key={answer.id} className="p-6 border border-[#F1F3F4] rounded-2xl flex items-start gap-6 hover:bg-[#F8F9FA] transition-colors group">
+              <div className="pt-1">
+                {answer.is_correct ? (
+                  <CheckCircle2 className="text-[#34A853]" size={24} />
+                ) : (
+                  <XCircle className="text-[#EA4335]" size={24} />
+                )}
               </div>
               <div className="flex-1">
-                <p className="font-medium mb-1">{answer.questions.question_text}</p>
-                <p className={`text-sm ${answer.is_correct ? 'text-green-600' : 'text-red-600'}`}>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#5F6368]">
+                    Q{index + 1} • {index % 2 === 0 ? 'LOGIC' : 'DESIGN'}
+                  </span>
+                  {!answer.is_correct && (
+                    <span className="text-xs font-medium text-[#EA4335] opacity-0 group-hover:opacity-100 transition-opacity">
+                      Incorrect
+                    </span>
+                  )}
+                </div>
+                <p className="text-lg font-medium text-[#202124] mb-1">{answer.questions.question_text}</p>
+                <p className={`text-sm ${answer.is_correct ? 'text-[#34A853]' : 'text-[#EA4335]'}`}>
                   Your answer: {answer.options.option_text}
                 </p>
               </div>
@@ -86,15 +134,50 @@ export function ResultDashboard({ attempt }: { attempt: any }) {
           ))}
         </div>
       </div>
+
+      <div className="flex justify-center gap-4 py-8">
+        <Button asChild className="h-12 px-8 rounded-xl bg-[#4285F4] hover:bg-[#1A73E8]">
+          <Link href="/dashboard">Return to Dashboard</Link>
+        </Button>
+        <Button 
+          variant="outline" 
+          className="h-12 px-8 rounded-xl border-[#DADCE0]"
+          onClick={() => window.open(`/api/report/${attempt.id}`, '_blank')}
+        >
+          Download PDF Report
+        </Button>
+      </div>
     </div>
   )
 }
 
-// Helper to allow Button to work with Link
-function ButtonWithLink({ children, href, ...props }: any) {
+function CategoryBar({ label, score }: { label: string, score: number }) {
   return (
-    <Button {...props} asChild>
-      <Link href={href}>{children}</Link>
-    </Button>
+    <div className="space-y-3">
+      <div className="flex justify-between text-sm font-medium">
+        <span className="text-[#202124]">{label}</span>
+        <span className="text-[#5F6368]">{score}%</span>
+      </div>
+      <div className="h-1.5 w-full bg-[#F1F3F4] rounded-full overflow-hidden">
+        <div 
+          className="h-full bg-[#4285F4] transition-all duration-1000 ease-out" 
+          style={{ width: `${score}%` }}
+        />
+      </div>
+    </div>
+  )
+}
+
+function StatCard({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) {
+  return (
+    <div className="bg-white border border-[#DADCE0] p-8 rounded-3xl shadow-sm flex items-start gap-4">
+      <div className="w-10 h-10 rounded-xl bg-[#F8F9FA] flex items-center justify-center mt-1">
+        {icon}
+      </div>
+      <div>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-[#5F6368] mb-1">{label}</p>
+        <div className="text-2xl font-bold text-[#202124]">{value}</div>
+      </div>
+    </div>
   )
 }

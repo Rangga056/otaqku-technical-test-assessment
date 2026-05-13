@@ -1,7 +1,7 @@
 "use server"
 
 import { auth } from "@/auth"
-import { getAuthenticatedSupabase, supabase } from "@/lib/supabase"
+import { getAuthenticatedSupabase, supabaseClient } from "@/lib/db"
 import { calculateScore } from "@/lib/quiz-engine"
 import { SubmissionSchema, QuizSchema } from "@/lib/validations"
 import { revalidatePath } from "next/cache"
@@ -11,7 +11,7 @@ import { revalidatePath } from "next/cache"
  * Prevents N+1 problem.
  */
 export async function getQuiz(id: string) {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from("quizzes")
     .select(`
       *,

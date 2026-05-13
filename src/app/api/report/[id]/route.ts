@@ -1,16 +1,19 @@
 import { auth } from "@/auth"
-import { getAuthenticatedSupabase } from "@/lib/supabase"
-import { renderToStream } from "@react-pdf/renderer"
+import { getAuthenticatedSupabase } from "@/lib/db"
+import { renderToBuffer } from "@react-pdf/renderer"
 import { PDFReport } from "@/components/report/PDFTemplate"
 import { NextResponse } from "next/server"
 import React from "react"
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth()
   if (!session?.user?.id) return new NextResponse("Unauthorized", { status: 401 })
+
+  const { id } = await params
+  if (!id) return new NextResponse("Bad Request", { status: 400 })
 
   const supabase = await getAuthenticatedSupabase(session.user.id)
   
@@ -25,18 +28,23 @@ export async function GET(
         options(option_text)
       )
     `)
-    .eq("id", params.id)
+    .eq("id", id)
     .single()
 
   if (error || !attempt) return new NextResponse("Not Found", { status: 404 })
 
-  // @ts-ignore - renderToStream returns a node stream, we convert to web stream
-  const stream = await renderToStream(React.createElement(PDFReport, { attempt }))
+  try {
+    const buffer = await renderToBuffer(React.createElement(PDFReport, { attempt }))
 
-  return new NextResponse(stream as any, {
-    headers: {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="report-${params.id}.pdf"`,
-    },
-  })
+    return new NextResponse(buffer, {
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename="otaqku-report-${id}.pdf"`,
+        "Content-Length": buffer.length.toString(),
+      },
+    })
+  } catch (err) {
+    console.error("PDF Generation Error:", err)
+    return new NextResponse("Error generating PDF", { status: 500 })
+  }
 }

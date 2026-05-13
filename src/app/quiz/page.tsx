@@ -1,8 +1,8 @@
-import { supabase } from "@/lib/supabase"
+import { supabaseClient } from "@/lib/db"
 import { QuizCard } from "@/components/quiz/QuizCard"
 
 export default async function BrowseQuizzesPage() {
-  const { data: quizzes } = await supabase
+  const { data: quizzes } = await supabaseClient
     .from("quizzes")
     .select(`
       *,

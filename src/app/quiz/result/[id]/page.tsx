@@ -1,5 +1,5 @@
 import { auth } from "@/auth"
-import { getAuthenticatedSupabase } from "@/lib/supabase"
+import { getAuthenticatedSupabase } from "@/lib/db"
 import { notFound, redirect } from "next/navigation"
 import { ResultDashboard } from "@/components/quiz/ResultDashboard"
 
@@ -32,9 +32,12 @@ export default async function ResultPage({ params }: PageProps) {
 
   if (error || !attempt) return notFound()
 
+  const { calculatePercentile } = await import("@/lib/quiz-engine")
+  const percentile = await calculatePercentile(attempt.quiz_id, attempt.total_score)
+
   return (
     <main className="container mx-auto px-6 py-12 flex-1">
-      <ResultDashboard attempt={attempt} />
+      <ResultDashboard attempt={attempt} percentile={percentile} />
     </main>
   )
 }

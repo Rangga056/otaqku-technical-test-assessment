@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { calculateScore, getCategory } from './quiz-engine'
+import { calculateScore, getCategoryAndAchievement } from './quiz-engine'
 import { Question } from './validations'
 
 describe('Quiz Engine', () => {
@@ -32,11 +32,13 @@ describe('Quiz Engine', () => {
     expect(result.totalScore).toBe(10)
     expect(result.maxScore).toBe(30)
     expect(result.percentage).toBe(Math.round((10 / 30) * 100))
+    expect(result.achievement).toBeDefined()
   })
 
-  it('should assign categories correctly', () => {
-    expect(getCategory(30)).toBe('Beginner')     // 30%
-    expect(getCategory(60)).toBe('Intermediate') // 60%
-    expect(getCategory(90)).toBe('Advanced')     // 90%
+  it('should assign categories and achievements correctly', () => {
+    expect(getCategoryAndAchievement(30).category).toBe('Beginner')
+    expect(getCategoryAndAchievement(60).category).toBe('Intermediate')
+    expect(getCategoryAndAchievement(95).category).toBe('Advanced')
+    expect(getCategoryAndAchievement(95).achievement).toBe('Logical Savant')
   })
 })
