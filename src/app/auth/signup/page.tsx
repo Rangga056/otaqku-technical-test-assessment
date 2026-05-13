@@ -65,7 +65,7 @@ export default function SignupPage() {
         <Button 
           variant="outline" 
           type="button"
-          onClick={() => signIn("google")}
+          onClick={() => signIn("google", { redirectTo: "/dashboard" })}
           className="w-full h-12 rounded-xl text-sm font-bold flex items-center justify-center gap-2"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24">
