@@ -16,7 +16,6 @@ export function QuizClient({ quiz }: { quiz: Quiz }) {
     nextQuestion, 
     prevQuestion, 
     startQuiz,
-    isFinished,
     finishQuiz
   } = useQuizStore()
   
@@ -49,42 +48,46 @@ export function QuizClient({ quiz }: { quiz: Quiz }) {
   if (!currentQuestion) return null
 
   return (
-    <div className="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
-      <div className="mb-8 flex justify-between items-center">
-        <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
-          Question {currentQuestionIndex + 1} of {quiz.questions.length}
-        </h2>
-        <div className="h-2 w-32 bg-gray-100 rounded-full overflow-hidden">
+    <div className="max-w-3xl mx-auto bg-white p-10 rounded-[24px] border border-[#DADCE0] shadow-sm">
+      <div className="mb-10 flex flex-col gap-4">
+        <div className="flex justify-between items-center text-[#5F6368] text-sm font-medium">
+          <span>Question {currentQuestionIndex + 1} of {quiz.questions.length}</span>
+          <span>{Math.round(((currentQuestionIndex + 1) / quiz.questions.length) * 100)}%</span>
+        </div>
+        <div className="h-1.5 w-full bg-[#F8F9FA] rounded-full overflow-hidden">
           <div 
-            className="h-full bg-blue-600 transition-all duration-300" 
+            className="h-full bg-[#4285F4] transition-all duration-500 ease-out" 
             style={{ width: `${((currentQuestionIndex + 1) / quiz.questions.length) * 100}%` }}
           />
         </div>
       </div>
 
-      <h1 className="text-2xl font-bold mb-8">{currentQuestion.question_text}</h1>
+      <h1 className="text-3xl font-medium mb-10 text-[#202124] leading-tight">
+        {currentQuestion.question_text}
+      </h1>
 
-      <div className="space-y-4 mb-8">
+      <div className="space-y-4 mb-12">
         {currentQuestion.options.map((option) => (
           <button
             key={option.id}
             onClick={() => setAnswer(currentQuestion.id, option.id)}
-            className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
+            className={`w-full text-left p-5 rounded-2xl border-2 transition-all duration-200 ${
               answers[currentQuestion.id] === option.id
-                ? "border-blue-600 bg-blue-50 text-blue-700"
-                : "border-gray-100 hover:border-gray-200"
+                ? "border-[#4285F4] bg-[#E8F0FE] text-[#1A73E8]"
+                : "border-[#DADCE0] hover:border-[#4285F4] text-[#202124]"
             }`}
           >
-            {option.option_text}
+            <span className="text-lg font-medium">{option.option_text}</span>
           </button>
         ))}
       </div>
 
-      <div className="flex justify-between gap-4">
+      <div className="flex justify-between items-center pt-8 border-t border-[#DADCE0]">
         <Button
-          variant="outline"
+          variant="ghost"
           onClick={prevQuestion}
           disabled={currentQuestionIndex === 0 || isSubmitting}
+          className="text-[#5F6368]"
         >
           Previous
         </Button>
@@ -93,14 +96,15 @@ export function QuizClient({ quiz }: { quiz: Quiz }) {
           <Button
             onClick={handleSubmit}
             disabled={!answers[currentQuestion.id] || isSubmitting}
-            className="bg-green-600 hover:bg-green-700"
+            className="bg-[#34A853] hover:bg-[#2D8E47] text-white px-8 h-12 text-base"
           >
-            {isSubmitting ? "Submitting..." : "Finish Quiz"}
+            {isSubmitting ? "Submitting..." : "Complete Evaluation"}
           </Button>
         ) : (
           <Button
             onClick={nextQuestion}
             disabled={!answers[currentQuestion.id] || isSubmitting}
+            className="px-8 h-12 text-base"
           >
             Next Question
           </Button>

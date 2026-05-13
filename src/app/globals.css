@@ -1,35 +1,39 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Geist", sans-serif;
-  --font-mono: "Geist Mono", monospace;
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "Fira Code", monospace;
 }
 
 :root {
-  /* System Colors */
-  --background: #fdfdfd;
-  --foreground: #1a1a1a;
+  /* Google Material / Stitch Colors */
+  --background: #F8F9FA;
+  --foreground: #202124;
   
-  --color-surface: #ffffff;
-  --color-muted: #64748b;
-  --color-border: #e2e8f0;
+  --color-surface: #FFFFFF;
+  --color-muted: #5F6368;
+  --color-border: #DADCE0;
   
-  --color-primary: #2563eb;
-  --color-primary-hover: #1d4ed8;
-  --color-accent: #f8fafc;
+  /* Google Brand Accents */
+  --color-primary: #4285F4;
+  --color-primary-hover: #1A73E8;
+  --color-success: #34A853;
+  --color-warning: #FBBC05;
+  --color-error: #EA4335;
+  --color-accent: #E8F0FE; /* Light blue background for active states */
 
-  /* Spacing Scale */
+  /* Stitch/Material 3 Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+  --shadow-md: 0 1px 3px 0 rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15);
+  --shadow-lg: 0 2px 3px 0 rgba(60, 64, 67, 0.3), 0 6px 10px 4px rgba(60, 64, 67, 0.15);
+  
+  /* Spacing */
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
   --space-md: 1rem;
   --space-lg: 1.5rem;
   --space-xl: 2rem;
   --space-2xl: 3rem;
-
-  /* Shadows (Subtle Depth) */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.03), 0 4px 6px -4px rgb(0 0 0 / 0.03);
 }
 
 @layer base {
@@ -41,20 +45,29 @@
     color: var(--foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
-    letter-spacing: -0.01em;
+    letter-spacing: 0.01em;
   }
   h1, h2, h3, h4 {
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-weight: 500;
+    color: #202124;
+    letter-spacing: -0.01em;
   }
 }
 
-.glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+/* Material 3 Card Styles */
+.stitch-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: none;
+  transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.elevation-1 { box-shadow: var(--shadow-sm); }
-.elevation-2 { box-shadow: var(--shadow-md); }
-.elevation-3 { box-shadow: var(--shadow-lg); }
+.stitch-card:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.stitch-surface {
+  background-color: var(--color-surface);
+  border-radius: 24px;
+}

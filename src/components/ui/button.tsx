@@ -8,20 +8,21 @@ function cn(...inputs: ClassValue[]) {
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'default' | 'outline' | 'ghost'
+  variant?: 'default' | 'outline' | 'ghost' | 'tonal'
   asChild?: boolean
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'default', asChild = false, ...props }, ref) => {
     const variants = {
-      default: "bg-blue-600 text-white hover:bg-blue-700",
-      outline: "border border-gray-200 bg-transparent hover:bg-gray-50",
-      ghost: "bg-transparent hover:bg-gray-100"
+      default: "bg-[#4285F4] text-white hover:bg-[#1A73E8] shadow-sm",
+      outline: "border border-[#DADCE0] bg-transparent text-[#202124] hover:bg-[#F8F9FA]",
+      ghost: "bg-transparent text-[#5F6368] hover:bg-[#F8F9FA] hover:text-[#202124]",
+      tonal: "bg-[#E8F0FE] text-[#1A73E8] hover:bg-[#D2E3FC]"
     }
 
     const classes = cn(
-      "inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50",
+      "inline-flex items-center justify-center rounded-full px-6 py-2.5 text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4285F4] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
       variants[variant],
       className
     )
