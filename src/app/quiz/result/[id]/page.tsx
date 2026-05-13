@@ -1,11 +1,18 @@
 import { auth } from "@/auth"
 import { getAuthenticatedSupabase } from "@/lib/supabase"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import { ResultDashboard } from "@/components/quiz/ResultDashboard"
 
-export default async function ResultPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: Promise<{ id: string }>
+}
+
+export default async function ResultPage({ params }: PageProps) {
   const session = await auth()
-  if (!session?.user?.id) return notFound()
+  if (!session?.user?.id) redirect("/auth/signin")
+
+  const { id } = await params
+  if (!id) return notFound()
 
   const supabase = await getAuthenticatedSupabase(session.user.id)
   
@@ -20,13 +27,13 @@ export default async function ResultPage({ params }: { params: { id: string } })
         options(option_text)
       )
     `)
-    .eq("id", params.id)
+    .eq("id", id)
     .single()
 
   if (error || !attempt) return notFound()
 
   return (
-    <main className="container mx-auto px-4 py-8">
+    <main className="container mx-auto px-6 py-12 flex-1">
       <ResultDashboard attempt={attempt} />
     </main>
   )
