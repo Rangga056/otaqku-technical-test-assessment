@@ -7,47 +7,53 @@ otaQku is a high-fidelity, interactive web application designed for rigorous kno
 ### The Problem
 Traditional assessment tools often suffer from cognitive overload—cluttered interfaces, distracting feedback, and a lack of actionable post-quiz analysis. Users need a platform that focuses their attention on the knowledge at hand and provides structured, professional documentation of their progress.
 
-### The Solution
-otaQku solves this by providing:
-- **Distraction-Free Environment**: A "Stitch-inspired" minimalist UI with dark dotted backgrounds and clear typography.
-- **Immediate Multi-Dimensional Feedback**: Real-time score calculations and categorical performance breakdowns.
-- **Professional Portability**: One-click "Chart-to-PDF" reporting for formal documentation of results.
+### What Problems are we Solving?
+- **Cognitive Load**: By using a minimalist "Stitch-inspired" UI, we remove all visual noise that doesn't contribute to the learning process.
+- **Data Fragmentation**: otaQku centralizes all evaluation history in a searchable, sortable workspace.
+- **Reporting Friction**: Translating digital metrics into professional PDF documents is usually manual; we've automated this with a one-click high-fidelity export.
 
-### Target Users
-- **Students & Professionals**: Preparing for certifications or exams.
-- **Candidates**: Conducting self-evaluations for technical roles.
-- **Lifelong Learners**: Tracking their mastery across diverse domains.
+### Who will use this product?
+- **Students & Professionals**: Preparing for high-stakes certifications or exams.
+- **Candidates**: Conducting rigorous self-evaluations for technical or logical roles.
+- **Lifelong Learners**: Tracking their mastery across diverse domains with data-driven evidence.
 
-## 🛠 Architecture & Tech Choices
+## 🛠 Technical Documentation
 
-### Core Stack
-- **Framework**: [Next.js 15 (App Router)](https://nextjs.org/) for optimized Server-Side Rendering and fast client-side navigation.
-- **Language**: [TypeScript](https://www.typescriptlang.org/) for robust type-safety across the quiz engine and database layers.
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/) for a custom, minimalist design system.
-- **Database & Auth**: [Supabase](https://supabase.com/) (PostgreSQL + Auth) using Row Level Security (RLS) for absolute data isolation.
-- **State Management**: [Zustand](https://github.com/pmndrs/zustand) for lightweight, efficient quiz state tracking.
+### Project Architecture
+The application is built using the **Next.js 15 App Router** architecture, leveraging a mix of Server and Client components for optimal performance and SEO.
+
+- **`src/app`**: Contains all route segments.
+    - **`api/report`**: Server-side PDF generation logic.
+    - **`auth`**: Custom authentication flows (NextAuth v5).
+    - **`quiz`**: The core assessment engine.
+- **`src/components`**: Modular UI components.
+    - **`quiz/`**: Specialized interactive assessment and result components.
+    - **`dashboard/`**: Data-intensive workspace components (e.g., Activity Table).
+- **`src/lib`**: Shared logic including the `quiz-engine` for deterministic scoring.
+- **`supabase/`**: Database migrations and comprehensive seed data (40+ questions).
 
 ### The "Chart-to-PDF" Strategy
-One of the technical highlights is the reporting engine. To ensure the PDF accurately reflects the beautiful client-side visualizations:
 1.  **Rendering**: Metrics and charts are rendered on the client using Recharts and Tailwind.
-2.  **Capture**: [html2canvas](https://html2canvas.hertzen.com/) captures the high-DPI dashboard state as a Base64 image.
-3.  **Generation**: The image is sent to a Next.js API Route where [@react-pdf/renderer](https://react-pdf.org/) generates a structured, multi-page PDF on the server and streams it back to the user.
+2.  **Capture**: [html2canvas](https://html2canvas.hertzen.com/) captures the high-DPI dashboard state.
+3.  **Generation**: The image is sent to a Next.js API Route via `POST` where [@react-pdf/renderer](https://react-pdf.org/) generates a structured PDF on the server.
+
+## 🚀 Why this Stack?
+- **Next.js 15**: Chosen for its superior handling of Server Actions and the ability to handle authentication and API routes in a unified framework.
+- **Supabase (PostgreSQL)**: Relational data is critical for linking quizzes, questions, and attempts. **Row Level Security (RLS)** is used to ensure that users can *never* access another user's evaluation data at the database level.
+- **Zustand**: Selected for state management during quizzes because it is significantly lighter than Redux and offers a simpler API for transient UI states (like the current question index).
+- **TypeScript**: Mandatory for ensuring that the complex types of a quiz (options, correct answers, scores) remain consistent from the DB to the UI.
 
 ## 🚀 Local Setup Instructions
 
-1.  **Clone the Repository**:
+1.  **Clone & Install**:
     ```bash
     git clone [repository-url]
     cd otaqku-technical-test
-    ```
-
-2.  **Install Dependencies**:
-    ```bash
     bun install
     ```
 
-3.  **Environment Configuration**:
-    Create a `.env.local` file with your Supabase credentials:
+2.  **Environment Configuration**:
+    Create a `.env.local` file:
     ```env
     NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
     NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
@@ -55,20 +61,19 @@ One of the technical highlights is the reporting engine. To ensure the PDF accur
     AUTH_SECRET=your_next_auth_secret
     ```
 
-4.  **Database Setup**:
-    - Run the migration in `supabase/migrations/`.
-    - Apply the seed data in `supabase/seed.sql` to populate the library with 40 assessment items.
+3.  **Database & Seed**:
+    Apply the migration in `supabase/migrations/` and the updated `supabase/seed.sql` to your Supabase project to populate the 4 categories.
 
-5.  **Run Development Server**:
+4.  **Run**:
     ```bash
     bun dev
     ```
-    Access the application at `http://localhost:3000`.
 
 ## ⚖️ Limitations & Trade-offs
-- **Rule-Based Insights**: Currently uses a high-performance rule engine for scoring and categorization rather than AI, ensuring deterministic and reliable results.
-- **Fixed-Time Assessments**: The timer is currently client-side; future iterations will include server-side heartbeat checks for competitive integrity.
-- **PDF Layout**: Optimized for A4 printing; chart capture scales to fit, which may vary slightly across different viewport sizes.
+- **Rule-Based vs AI**: We chose a deterministic rule-based engine for scoring to ensure absolute reliability and low latency, sacrificing "natural language" feedback for mathematical precision.
+- **Client-Side Timer**: The timer is currently client-managed for UX smoothness. For high-stakes environments, a server-side "heartbeat" would be a necessary upgrade.
+- **Data Table vs Infinite Scroll**: We implemented a searchable/sortable Data Table for the evaluation history. While infinite scroll is better for "browsing," a table is superior for "managing" professional records.
+- **SVG Branding**: We used a lightweight SVG primitive for the favicon instead of multiple PNG assets to minimize initial page load and maintain infinite scalability across high-DPI displays.
 
 ---
 © 2026 otaQku Intelligence. Engineered for clarity.

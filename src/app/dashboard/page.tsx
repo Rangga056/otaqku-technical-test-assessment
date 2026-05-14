@@ -1,10 +1,10 @@
 import { auth } from "@/auth"
 import { getAuthenticatedSupabase, supabaseClient } from "@/lib/db"
 import { redirect } from "next/navigation"
-import { QuizCard } from "@/components/quiz/QuizCard"
 import { BarChart, Clock, Trophy, Target } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { ActivityTable } from "@/components/dashboard/ActivityTable"
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -18,7 +18,7 @@ export default async function DashboardPage() {
     .select("*")
     .single()
 
-  // 2. Fetch Recent Attempts
+  // 2. Fetch ALL Attempts for the Table
   const { data: attempts } = await authSupabase
     .from("quiz_attempts")
     .select(`
@@ -26,7 +26,6 @@ export default async function DashboardPage() {
       quizzes(title)
     `)
     .order("created_at", { ascending: false })
-    .limit(5)
 
   // 3. Fetch Available Quizzes
   const { data: quizzes } = await supabaseClient
@@ -38,16 +37,18 @@ export default async function DashboardPage() {
     .limit(3)
 
   return (
-    <main className="container mx-auto px-6 py-12 max-w-6xl bg-[#F8F9FA] flex-1">
-      <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+    <main className="container mx-auto px-4 sm:px-6 py-8 md:py-12 max-w-7xl bg-[#F8F9FA] flex-1">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-12 gap-6">
         <div>
-          <h1 className="text-4xl font-medium tracking-tight mb-2 text-[#202124]">Welcome back, {session.user.name?.split(' ')[0]}</h1>
-          <p className="text-[#5F6368]">Here's an overview of your intelligence workspace.</p>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter mb-3 md:mb-4 text-[#202124]">
+            Intelligence Workspace
+          </h1>
+          <p className="text-[#5F6368] text-base md:text-lg">Welcome back, {session.user.name?.split(' ')[0]}. Track your cognitive growth here.</p>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12 md:mb-16">
         <StatCard 
           icon={<Target className="text-[#4285F4]" size={20} />}
           label="Avg. Percentage"
@@ -74,61 +75,40 @@ export default async function DashboardPage() {
         />
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
-        {/* Recent Activity */}
-        <div className="lg:col-span-2 space-y-6">
-          <h2 className="text-xl font-medium text-[#202124]">
-            Recent Activity
+      <div className="grid lg:grid-cols-3 gap-12">
+        {/* Recent Activity Table */}
+        <div className="lg:col-span-2 space-y-8">
+          <h2 className="text-2xl font-bold text-[#202124] flex items-center gap-3">
+            Evaluation History
+            <span className="text-xs font-bold px-2 py-0.5 bg-[#F1F3F4] text-[#5F6368] rounded-md">
+              {attempts?.length || 0}
+            </span>
           </h2>
-          <div className="space-y-4">
-            {attempts?.length ? attempts.map((attempt) => (
-              <Link 
-                key={attempt.id} 
-                href={`/quiz/result/${attempt.id}`}
-                className="flex items-center justify-between p-5 stitch-card hover:bg-[#F8F9FA] transition-all group"
-              >
-                <div>
-                  <p className="font-medium text-[#202124] group-hover:text-[#1A73E8] transition-colors mb-1">
-                    {attempt.quizzes.title}
-                  </p>
-                  <p className="text-xs text-[#5F6368]">
-                    {new Date(attempt.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="font-medium text-lg text-[#202124]">
-                    {Math.round((attempt.total_score / attempt.max_score) * 100)}%
-                  </p>
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#4285F4]">
-                    {attempt.category}
-                  </p>
-                </div>
-              </Link>
-            )) : (
-              <div className="p-8 text-center bg-white rounded-xl border border-dashed border-[#DADCE0]">
-                <p className="text-[#5F6368]">No attempts yet. Start an evaluation.</p>
-              </div>
-            )}
-          </div>
+          <ActivityTable attempts={attempts || []} />
         </div>
 
         {/* Available Quizzes */}
-        <div className="space-y-6">
-          <h2 className="text-xl font-medium text-[#202124]">Featured Quizzes</h2>
-          <div className="space-y-4">
+        <div className="space-y-8">
+          <h2 className="text-2xl font-bold text-[#202124]">Recommended</h2>
+          <div className="space-y-6">
             {quizzes?.map((quiz) => (
-              <div key={quiz.id} className="p-6 stitch-card space-y-4">
+              <div key={quiz.id} className="p-8 bg-white border border-[#F1F3F4] rounded-[32px] shadow-sm space-y-6 hover:border-[#4285F4] transition-all group">
                 <div>
-                  <h3 className="font-medium text-[#202124]">{quiz.title}</h3>
-                  <p className="text-xs text-[#5F6368] line-clamp-2 mt-1">{quiz.description}</p>
+                  <h3 className="text-xl font-bold text-[#202124] group-hover:text-[#4285F4] transition-colors">{quiz.title}</h3>
+                  <p className="text-sm text-[#5F6368] line-clamp-2 mt-2 leading-relaxed">{quiz.description}</p>
                 </div>
-                <Button asChild className="w-full text-sm" variant="tonal">
-                  <Link href={`/quiz/${quiz.id}`}>Begin Evaluation</Link>
-                </Button>
+                <div className="flex items-center justify-between">
+                   <span className="text-[10px] font-bold uppercase tracking-widest text-[#DADCE0]">
+                    {quiz.questions.length} Items
+                  </span>
+                  <Button asChild className="text-sm rounded-xl px-6" variant="tonal">
+                    <Link href={`/quiz/${quiz.id}`}>Begin</Link>
+                  </Button>
+                </div>
               </div>
             ))}
-            <Button asChild variant="ghost" className="w-full font-medium text-sm">
-              <Link href="/quiz">View Library</Link>
+            <Button asChild variant="ghost" className="w-full font-bold text-sm h-14 rounded-2xl border border-dashed border-[#DADCE0] hover:bg-[#F8F9FA]">
+              <Link href="/quiz">Explore Library</Link>
             </Button>
           </div>
         </div>
@@ -139,14 +119,14 @@ export default async function DashboardPage() {
 
 function StatCard({ icon, label, value, color }: { icon: React.ReactNode, label: string, value: string | number, color: string }) {
   return (
-    <div className="stitch-card p-6 flex flex-col justify-between h-32">
+    <div className="bg-white border border-[#F1F3F4] p-8 rounded-[32px] shadow-sm flex flex-col justify-between h-40 hover:scale-[1.02] transition-all">
       <div className="flex justify-between items-start">
-        <p className="text-xs font-medium text-[#5F6368] tracking-wide">{label}</p>
-        <div className={`w-8 h-8 ${color} rounded-full flex items-center justify-center`}>
+        <p className="text-[10px] font-bold text-[#5F6368] uppercase tracking-[0.2em]">{label}</p>
+        <div className={`w-10 h-10 ${color} rounded-2xl flex items-center justify-center`}>
           {icon}
         </div>
       </div>
-      <p className="text-3xl font-medium text-[#202124]">{value}</p>
+      <p className="text-4xl font-black text-[#202124] tracking-tighter">{value}</p>
     </div>
   )
 }

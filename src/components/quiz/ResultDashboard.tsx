@@ -87,35 +87,35 @@ export function ResultDashboard({ attempt, percentile }: ResultDashboardProps) {
   }, [percentage])
 
   return (
-    <div className="max-w-6xl mx-auto space-y-12 animate-in fade-in duration-1000">
+    <div className="max-w-6xl mx-auto space-y-8 md:space-y-12 animate-in fade-in duration-1000">
       {/* Top Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8 md:gap-10">
         <div className="max-w-2xl">
-          <h1 className="text-6xl font-bold tracking-tight text-[#202124] mb-6 leading-tight">Quiz Completed</h1>
-          <p className="text-[#5F6368] text-xl leading-relaxed">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-[#202124] mb-4 md:mb-6 leading-tight">Quiz Completed</h1>
+          <p className="text-[#5F6368] text-lg md:text-xl leading-relaxed">
             Your assessment is complete. Review your performance metrics and detailed question breakdown below.
           </p>
         </div>
         
-        <div className="flex gap-4">
-          <div className="bg-white border border-[#F1F3F4] p-8 rounded-[32px] shadow-sm text-center min-w-[180px]">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6368] mb-2">Final Score</p>
-            <div className="text-5xl font-black text-[#4285F4]">{percentage}%</div>
+        <div className="flex flex-wrap gap-4 w-full lg:w-auto">
+          <div className="flex-1 lg:flex-none bg-white border border-[#F1F3F4] p-6 md:p-8 rounded-[24px] md:rounded-[32px] shadow-sm text-center min-w-[140px] md:min-w-[180px]">
+            <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6368] mb-2">Final Score</p>
+            <div className="text-3xl md:text-5xl font-black text-[#4285F4]">{percentage}%</div>
           </div>
-          <div className="bg-white border border-[#F1F3F4] p-8 rounded-[32px] shadow-sm text-center min-w-[180px]">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6368] mb-2">Percentile</p>
-            <div className="text-5xl font-black text-[#202124]">
+          <div className="flex-1 lg:flex-none bg-white border border-[#F1F3F4] p-6 md:p-8 rounded-[24px] md:rounded-[32px] shadow-sm text-center min-w-[140px] md:min-w-[180px]">
+            <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6368] mb-2">Percentile</p>
+            <div className="text-3xl md:text-5xl font-black text-[#202124]">
               {percentile >= 50 ? `Top ${100 - percentile}%` : `Better than ${percentile}%`}
             </div>
           </div>
         </div>
       </div>
 
-      <div ref={dashboardRef} className="space-y-12 bg-white rounded-[40px] p-2 border border-[#F1F3F4]">
-        <div className="grid lg:grid-cols-3 gap-8 p-10">
-          <div className="lg:col-span-2 bg-white border border-[#F1F3F4] p-12 rounded-[32px]">
-            <h2 className="text-2xl font-bold text-[#202124] mb-12">Category Performance</h2>
-            <div className="space-y-10">
+      <div ref={dashboardRef} className="space-y-8 md:space-y-12 bg-white rounded-[24px] md:rounded-[40px] p-1.5 md:p-2 border border-[#F1F3F4]">
+        <div className="grid lg:grid-cols-3 gap-6 md:gap-8 p-4 md:p-10">
+          <div className="lg:col-span-2 bg-white border border-[#F1F3F4] p-6 md:p-12 rounded-[24px] md:rounded-[32px]">
+            <h2 className="text-xl md:text-2xl font-bold text-[#202124] mb-8 md:mb-12">Category Performance</h2>
+            <div className="space-y-8 md:space-y-10">
               <CategoryBar label="Logic" score={percentage} />
               <CategoryBar label="Design" score={Math.max(20, percentage - 5)} />
               <CategoryBar label="History" score={Math.min(100, percentage + 8)} />
@@ -124,7 +124,7 @@ export function ResultDashboard({ attempt, percentile }: ResultDashboardProps) {
           </div>
 
           <div className="grid gap-6">
-            <div className="grid grid-cols-2 lg:grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
               <StatCard 
                 icon={<Clock className="text-[#4285F4]" size={20} />} 
                 label="Time Elapsed" 
@@ -136,50 +136,47 @@ export function ResultDashboard({ attempt, percentile }: ResultDashboardProps) {
                 value="43s / q" 
               />
             </div>
-            <div className="bg-white border border-[#F1F3F4] p-10 rounded-[32px] flex flex-col justify-center">
-              <div className="w-12 h-12 rounded-2xl bg-[#E8F0FE] flex items-center justify-center text-[#4285F4] mb-8">
-                <Trophy size={24} />
+            <div className="bg-white border border-[#F1F3F4] p-8 md:p-10 rounded-[24px] md:rounded-[32px] flex flex-col justify-center">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-[#E8F0FE] flex items-center justify-center text-[#4285F4] mb-6 md:mb-8">
+                <Trophy size={20} className="md:w-6 md:h-6" />
               </div>
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6368] mb-2">Achievement</p>
-              <h3 className="text-2xl font-bold text-[#202124] mb-4">{achievement.title}</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-[#202124] mb-4">{achievement.title}</h3>
               <p className="text-sm text-[#5F6368] leading-relaxed">{achievement.desc}</p>
             </div>
           </div>
         </div>
 
         {/* Question Breakdown */}
-        <div className="p-10 pt-0">
-          <h2 className="text-2xl font-bold text-[#202124] mb-12 ml-4">Question Breakdown</h2>
+        <div className="p-4 md:p-10 pt-0">
+          <h2 className="text-xl md:text-2xl font-bold text-[#202124] mb-8 md:mb-12 ml-4">Question Breakdown</h2>
           <div className="space-y-4">
             {attempt.attempt_answers.map((answer: any, index: number) => (
-              <div key={answer.id} className="p-8 border border-[#F1F3F4] rounded-[24px] flex items-start gap-8 hover:bg-[#F8F9FA] transition-all duration-300 group">
+              <div key={answer.id} className="p-6 md:p-8 border border-[#F1F3F4] rounded-[20px] md:rounded-[24px] flex flex-col sm:flex-row items-start gap-4 md:gap-8 hover:bg-[#F8F9FA] transition-all duration-300 group">
                 <div className="pt-1">
                   {answer.is_correct ? (
-                    <div className="w-10 h-10 rounded-full bg-[#E6F4EA] flex items-center justify-center text-[#34A853]">
-                      <CheckCircle2 size={24} />
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#E6F4EA] flex items-center justify-center text-[#34A853]">
+                      <CheckCircle2 size={20} className="md:w-6 md:h-6" />
                     </div>
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-[#FCE8E6] flex items-center justify-center text-[#EA4335]">
-                      <XCircle size={24} />
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#FCE8E6] flex items-center justify-center text-[#EA4335]">
+                      <XCircle size={20} className="md:w-6 md:h-6" />
                     </div>
                   )}
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 w-full">
                   <div className="flex justify-between items-center mb-3">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6368]">
+                    <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6368]">
                       Q{index + 1} • {index % 2 === 0 ? 'LOGIC' : 'DESIGN'}
                     </span>
-                    <span className={`text-[10px] font-bold uppercase tracking-[0.1em] ${answer.is_correct ? 'text-[#34A853]' : 'text-[#EA4335]'}`}>
+                    <span className={`text-[9px] md:text-[10px] font-bold uppercase tracking-[0.1em] ${answer.is_correct ? 'text-[#34A853]' : 'text-[#EA4335]'}`}>
                       {answer.is_correct ? 'Correct' : 'Incorrect'}
                     </span>
                   </div>
-                  <p className="text-xl font-bold text-[#202124] mb-3 leading-tight">{answer.questions.question_text}</p>
+                  <p className="text-lg md:text-xl font-bold text-[#202124] mb-3 leading-tight">{answer.questions.question_text}</p>
                   <p className={`text-sm font-medium ${answer.is_correct ? 'text-[#34A853]' : 'text-[#EA4335]'}`}>
                     Your answer: {answer.options.option_text}
                   </p>
-                </div>
-                <div className="hidden sm:flex text-sm font-medium text-[#DADCE0] group-hover:text-[#5F6368] transition-colors">
-                  {Math.round(Math.random() * 20 + 30)}s
                 </div>
               </div>
             ))}
@@ -188,24 +185,24 @@ export function ResultDashboard({ attempt, percentile }: ResultDashboardProps) {
       </div>
 
       {/* Action Buttons */}
-      <div className="flex justify-center gap-6 py-12">
-        <Button asChild className="h-16 px-12 rounded-2xl bg-[#4285F4] hover:bg-[#1A73E8] text-lg font-bold shadow-xl shadow-blue-100 transition-all hover:scale-[1.02]">
+      <div className="flex flex-col sm:flex-row justify-center gap-4 md:gap-6 py-8 md:py-12 px-4">
+        <Button asChild className="w-full sm:w-auto h-14 md:h-16 px-8 md:px-12 rounded-2xl bg-[#4285F4] hover:bg-[#1A73E8] text-base md:text-lg font-bold shadow-xl shadow-blue-100 transition-all hover:scale-[1.02]">
           <Link href="/dashboard">Return to Dashboard</Link>
         </Button>
         <Button 
           variant="outline" 
-          className="h-16 px-12 rounded-2xl border-2 border-[#DADCE0] gap-3 text-lg font-bold hover:bg-[#F8F9FA] transition-all hover:scale-[1.02]"
+          className="w-full sm:w-auto h-14 md:h-16 px-8 md:px-12 rounded-2xl border-2 border-[#DADCE0] gap-3 text-base md:text-lg font-bold hover:bg-[#F8F9FA] transition-all hover:scale-[1.02]"
           onClick={handleDownloadPDF}
           disabled={isExporting}
         >
           {isExporting ? (
             <>
-              <Loader2 size={24} className="animate-spin" />
+              <Loader2 size={20} className="animate-spin md:w-6 md:h-6" />
               Generating Report...
             </>
           ) : (
             <>
-              <Download size={24} />
+              <Download size={20} className="md:w-6 md:h-6" />
               Download PDF Report
             </>
           )}

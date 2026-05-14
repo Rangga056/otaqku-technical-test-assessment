@@ -65,55 +65,55 @@ export function QuizClient({ quiz }: { quiz: Quiz }) {
   if (!currentQuestion) return null
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full h-full flex flex-col max-w-5xl mx-auto">
       {/* Top Progress Bar - Full Width */}
-      <div className="w-full h-1.5 bg-[#F1F3F4] rounded-full overflow-hidden mb-12">
+      <div className="w-full h-1 md:h-1.5 bg-[#F1F3F4] rounded-full overflow-hidden mb-8 md:mb-12">
         <div 
           className="h-full bg-[#4285F4] transition-all duration-700 ease-in-out" 
           style={{ width: `${((currentQuestionIndex + 1) / quiz.questions.length) * 100}%` }}
         />
       </div>
 
-      <div className="flex justify-between items-center mb-16">
+      <div className="flex justify-between items-center mb-10 md:mb-16">
         <div className="flex flex-col">
-          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6368] mb-1">
+          <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6368] mb-1">
             Question {currentQuestionIndex + 1} / {quiz.questions.length}
           </span>
         </div>
         
-        <div className="flex items-center gap-2 bg-[#F8F9FA] px-4 py-2 rounded-full border border-[#DADCE0]">
-          <Timer size={16} className="text-[#202124]" />
-          <span className="text-sm font-bold text-[#202124] tabular-nums">
+        <div className="flex items-center gap-2 bg-[#F8F9FA] px-3 md:px-4 py-1.5 md:py-2 rounded-full border border-[#DADCE0]">
+          <Timer size={14} className="text-[#202124] md:w-4 md:h-4" />
+          <span className="text-xs md:text-sm font-bold text-[#202124] tabular-nums">
             {formatTime(timeLeft)}
           </span>
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col items-start max-w-3xl">
-        <h1 className="text-5xl font-bold tracking-tight text-[#202124] leading-[1.1] mb-16">
+      <div className="flex-1 flex flex-col items-start w-full">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#202124] leading-[1.15] md:leading-[1.1] mb-10 md:mb-16">
           {currentQuestion.question_text}
         </h1>
 
-        <div className="w-full space-y-4 mb-20">
+        <div className="w-full space-y-3 md:space-y-4 mb-16 md:mb-20">
           {currentQuestion.options.map((option) => {
             const isSelected = answers[currentQuestion.id] === option.id
             return (
               <button
                 key={option.id}
                 onClick={() => setAnswer(currentQuestion.id, option.id)}
-                className={`w-full group flex items-start gap-6 p-8 rounded-2xl border-2 transition-all duration-300 text-left ${
+                className={`w-full group flex items-start gap-4 md:gap-6 p-5 md:p-8 rounded-xl md:rounded-2xl border-2 transition-all duration-300 text-left ${
                   isSelected
                     ? "border-[#4285F4] bg-[#F8F9FA]"
                     : "border-[#F1F3F4] hover:border-[#DADCE0] bg-white"
                 }`}
               >
-                <div className={`mt-1.5 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                <div className={`mt-1 w-5 h-5 md:w-6 md:h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
                   isSelected ? "border-[#4285F4] bg-[#4285F4]" : "border-[#DADCE0] group-hover:border-[#5F6368]"
                 }`}>
-                  {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
+                  {isSelected && <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-white" />}
                 </div>
                 <div className="flex-1">
-                  <p className={`text-xl font-medium leading-relaxed transition-colors ${
+                  <p className={`text-base md:text-xl font-medium leading-relaxed transition-colors ${
                     isSelected ? "text-[#202124]" : "text-[#5F6368]"
                   }`}>
                     {option.option_text}
@@ -125,32 +125,33 @@ export function QuizClient({ quiz }: { quiz: Quiz }) {
         </div>
       </div>
 
-      <div className="flex justify-between items-center py-10 border-t border-[#F1F3F4]">
+      <div className="flex justify-between items-center py-8 md:py-10 border-t border-[#F1F3F4] mt-auto">
         <button
           onClick={prevQuestion}
           disabled={currentQuestionIndex === 0 || isSubmitting}
-          className="flex items-center gap-2 text-sm font-medium text-[#5F6368] hover:text-[#202124] disabled:opacity-30 transition-colors"
+          className="flex items-center gap-2 text-xs md:text-sm font-bold text-[#5F6368] hover:text-[#202124] disabled:opacity-30 transition-colors uppercase tracking-widest"
         >
-          <ArrowLeft size={16} />
-          Previous
+          <ArrowLeft size={14} className="md:w-4 md:h-4" />
+          <span className="hidden sm:inline">Previous</span>
+          <span className="sm:hidden">Prev</span>
         </button>
 
         {isLastQuestion ? (
           <Button
             onClick={handleSubmit}
             disabled={!answers[currentQuestion.id] || isSubmitting}
-            className="bg-[#4285F4] hover:bg-[#1A73E8] text-white px-10 h-14 rounded-xl text-base font-bold shadow-lg shadow-blue-200 transition-all hover:scale-[1.02]"
+            className="bg-[#4285F4] hover:bg-[#1A73E8] text-white px-6 md:px-10 h-12 md:h-14 rounded-xl md:rounded-2xl text-sm md:text-base font-bold shadow-lg shadow-blue-200 transition-all hover:scale-[1.02]"
           >
-            {isSubmitting ? "Submitting..." : "Complete Evaluation"}
+            {isSubmitting ? "..." : "Complete Evaluation"}
           </Button>
         ) : (
           <Button
             onClick={nextQuestion}
             disabled={!answers[currentQuestion.id] || isSubmitting}
-            className="bg-[#4285F4] hover:bg-[#1A73E8] text-white px-10 h-14 rounded-xl text-base font-bold flex items-center gap-2 transition-all hover:scale-[1.02]"
+            className="bg-[#4285F4] hover:bg-[#1A73E8] text-white px-6 md:px-10 h-12 md:h-14 rounded-xl md:rounded-2xl text-sm md:text-base font-bold flex items-center gap-2 transition-all hover:scale-[1.02]"
           >
             Next Question
-            <ArrowRight size={18} />
+            <ArrowRight size={16} className="md:w-5 md:h-5" />
           </Button>
         )}
       </div>

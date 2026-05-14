@@ -23,17 +23,18 @@ export async function Navbar() {
           {session ? (
             <>
               <Link href="/dashboard" className="text-sm font-medium text-[#5F6368] hover:text-[#202124] px-3 py-2 rounded-full hover:bg-[#F8F9FA] transition-colors">
-                Workspace
+                <span className="hidden sm:inline">Workspace</span>
+                <span className="sm:hidden">Home</span>
               </Link>
-              <div className="flex items-center gap-3 pl-4 ml-2 border-l border-[#DADCE0]">
-                <div className="flex flex-col items-end">
+              <div className="flex items-center gap-2 sm:gap-3 sm:pl-4 sm:ml-2 sm:border-l border-[#DADCE0]">
+                <div className="hidden sm:flex flex-col items-end">
                   <span className="text-sm font-medium text-[#202124]">{session.user?.name}</span>
                 </div>
                 <form action={async () => {
                   "use server"
                   await signOut()
                 }}>
-                  <Button variant="ghost" className="p-2 h-10 w-10 rounded-full text-[#5F6368] hover:text-[#EA4335] hover:bg-red-50">
+                  <Button variant="ghost" className="p-2 h-9 w-9 sm:h-10 sm:w-10 rounded-full text-[#5F6368] hover:text-[#EA4335] hover:bg-red-50">
                     <LogOut size={18} />
                   </Button>
                 </form>

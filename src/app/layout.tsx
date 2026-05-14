@@ -10,7 +10,12 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "otaQku | Intelligence Platform",
-  description: "Evaluate your knowledge with AI-driven precision and detailed analytics.",
+  description: "Evaluate your knowledge with precision and detailed analytics.",
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
+  }
 };
 
 export default function RootLayout({

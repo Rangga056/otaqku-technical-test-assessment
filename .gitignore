@@ -39,3 +39,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# AI & Agents
+CLAUDE.md
+AGENTS.md
+PRD.md
+DESIGN_PROMPT.md
+docs/superpowers/
+.gemini/
+.gemini_security/
+nanobanana-output/
+*.md.tmp
