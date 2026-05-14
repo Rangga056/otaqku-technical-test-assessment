@@ -9,7 +9,7 @@ export interface ScoreResult {
   achievement: string
   answerBreakdown: {
     questionId: string
-    selectedOptionId: string
+    selectedOptionId: string | string[]
     isCorrect: boolean
   }[]
 }
@@ -40,7 +40,7 @@ export async function calculatePercentile(quizId: string, score: number) {
 }
 
 export function calculateScore(
-  answers: Record<string, string>,
+  answers: Record<string, string | string[]>,
   questions: Question[]
 ): ScoreResult {
   let totalScore = 0
@@ -48,19 +48,42 @@ export function calculateScore(
   const answerBreakdown: ScoreResult["answerBreakdown"] = []
 
   questions.forEach((question) => {
-    const selectedOptionId = answers[question.id]
-    const correctOption = question.options.find((o) => o.is_correct)
-    const isCorrect = selectedOptionId === correctOption?.id
+    const selected = answers[question.id]
+    const correctOptions = question.options.filter((o) => o.is_correct)
+    const correctOptionIds = correctOptions.map(o => o.id)
     
-    if (isCorrect) {
-      totalScore += question.points
+    let isCorrect = false
+    let questionScore = 0
+
+    if (question.type === 'multiple') {
+      const selectedIds = Array.isArray(selected) ? selected : [selected].filter(Boolean) as string[]
+      
+      if (selectedIds.length > 0) {
+        const selectedCorrectCount = selectedIds.filter(id => correctOptionIds.includes(id)).length
+        const selectedIncorrectCount = selectedIds.filter(id => !correctOptionIds.includes(id)).length
+        
+        // Logic: All selected must be correct, and we give points proportional to how many of the correct ones were found
+        // But if they pick even ONE wrong answer, they get 0 for that question (standard rigorous quiz logic)
+        if (selectedIncorrectCount === 0) {
+          questionScore = (selectedCorrectCount / correctOptionIds.length) * question.points
+          isCorrect = selectedCorrectCount === correctOptionIds.length
+        }
+      }
+    } else {
+      // Single choice logic
+      const selectedId = Array.isArray(selected) ? selected[0] : selected
+      isCorrect = correctOptionIds.includes(selectedId)
+      if (isCorrect) {
+        questionScore = question.points
+      }
     }
     
+    totalScore += questionScore
     maxScore += question.points
     
     answerBreakdown.push({
       questionId: question.id,
-      selectedOptionId,
+      selectedOptionId: selected,
       isCorrect,
     })
   })

@@ -111,7 +111,7 @@ export function ResultDashboard({ attempt, percentile }: ResultDashboardProps) {
         </div>
       </div>
 
-      <div ref={dashboardRef} className="space-y-8 md:space-y-12 bg-white rounded-[24px] md:rounded-[40px] p-1.5 md:p-2 border border-[#F1F3F4]">
+      <div ref={dashboardRef} className="space-y-8 md:space-y-12 bg-white rounded-[24px] md:rounded-[40px] p-1 sm:p-1.5 md:p-2 border border-[#F1F3F4]">
         <div className="grid lg:grid-cols-3 gap-6 md:gap-8 p-4 md:p-10">
           <div className="lg:col-span-2 bg-white border border-[#F1F3F4] p-6 md:p-12 rounded-[24px] md:rounded-[32px]">
             <h2 className="text-xl md:text-2xl font-bold text-[#202124] mb-8 md:mb-12">Category Performance</h2>
@@ -124,7 +124,7 @@ export function ResultDashboard({ attempt, percentile }: ResultDashboardProps) {
           </div>
 
           <div className="grid gap-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-1 gap-4 sm:gap-6">
               <StatCard 
                 icon={<Clock className="text-[#4285F4]" size={20} />} 
                 label="Time Elapsed" 
@@ -137,7 +137,7 @@ export function ResultDashboard({ attempt, percentile }: ResultDashboardProps) {
               />
             </div>
             <div className="bg-white border border-[#F1F3F4] p-8 md:p-10 rounded-[24px] md:rounded-[32px] flex flex-col justify-center">
-              <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-[#E8F0FE] flex items-center justify-center text-[#4285F4] mb-6 md:mb-8">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl sm:rounded-2xl bg-[#E8F0FE] flex items-center justify-center text-[#4285F4] mb-6 md:mb-8">
                 <Trophy size={20} className="md:w-6 md:h-6" />
               </div>
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6368] mb-2">Achievement</p>
@@ -151,10 +151,28 @@ export function ResultDashboard({ attempt, percentile }: ResultDashboardProps) {
         <div className="p-4 md:p-10 pt-0">
           <h2 className="text-xl md:text-2xl font-bold text-[#202124] mb-8 md:mb-12 ml-4">Question Breakdown</h2>
           <div className="space-y-4">
-            {attempt.attempt_answers.map((answer: any, index: number) => (
-              <div key={answer.id} className="p-6 md:p-8 border border-[#F1F3F4] rounded-[20px] md:rounded-[24px] flex flex-col sm:flex-row items-start gap-4 md:gap-8 hover:bg-[#F8F9FA] transition-all duration-300 group">
+            {Object.values(
+              attempt.attempt_answers.reduce((acc: any, curr: any) => {
+                const qId = curr.question_id;
+                if (!acc[qId]) {
+                  acc[qId] = {
+                    question_text: curr.questions.question_text,
+                    is_correct: curr.is_correct,
+                    options: [curr.options.option_text],
+                  };
+                } else {
+                  acc[qId].options.push(curr.options.option_text);
+                  // For multiple choice, if any partial is stored as is_correct=false, 
+                  // but we want to show the overall question status. 
+                  // In our engine, we store the same is_correct for all rows of that question.
+                  acc[qId].is_correct = curr.is_correct; 
+                }
+                return acc;
+              }, {})
+            ).map((q: any, index: number) => (
+              <div key={index} className="p-6 md:p-8 border border-[#F1F3F4] rounded-[20px] md:rounded-[24px] flex flex-col sm:flex-row items-start gap-4 md:gap-8 hover:bg-[#F8F9FA] transition-all duration-300 group">
                 <div className="pt-1">
-                  {answer.is_correct ? (
+                  {q.is_correct ? (
                     <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#E6F4EA] flex items-center justify-center text-[#34A853]">
                       <CheckCircle2 size={20} className="md:w-6 md:h-6" />
                     </div>
@@ -167,15 +185,15 @@ export function ResultDashboard({ attempt, percentile }: ResultDashboardProps) {
                 <div className="flex-1 w-full">
                   <div className="flex justify-between items-center mb-3">
                     <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6368]">
-                      Q{index + 1} • {index % 2 === 0 ? 'LOGIC' : 'DESIGN'}
+                      Q{index + 1}
                     </span>
-                    <span className={`text-[9px] md:text-[10px] font-bold uppercase tracking-[0.1em] ${answer.is_correct ? 'text-[#34A853]' : 'text-[#EA4335]'}`}>
-                      {answer.is_correct ? 'Correct' : 'Incorrect'}
+                    <span className={`text-[9px] md:text-[10px] font-bold uppercase tracking-[0.1em] ${q.is_correct ? 'text-[#34A853]' : 'text-[#EA4335]'}`}>
+                      {q.is_correct ? 'Correct' : 'Incorrect'}
                     </span>
                   </div>
-                  <p className="text-lg md:text-xl font-bold text-[#202124] mb-3 leading-tight">{answer.questions.question_text}</p>
-                  <p className={`text-sm font-medium ${answer.is_correct ? 'text-[#34A853]' : 'text-[#EA4335]'}`}>
-                    Your answer: {answer.options.option_text}
+                  <p className="text-lg md:text-xl font-bold text-[#202124] mb-3 leading-tight">{q.question_text}</p>
+                  <p className={`text-sm font-medium ${q.is_correct ? 'text-[#34A853]' : 'text-[#EA4335]'}`}>
+                    Your answer: {q.options.join(", ")}
                   </p>
                 </div>
               </div>
@@ -214,12 +232,12 @@ export function ResultDashboard({ attempt, percentile }: ResultDashboardProps) {
 
 function CategoryBar({ label, score }: { label: string, score: number }) {
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between text-sm font-bold tracking-tight">
+    <div className="space-y-3 sm:space-y-4">
+      <div className="flex justify-between text-xs sm:text-sm font-bold tracking-tight">
         <span className="text-[#202124]">{label}</span>
         <span className="text-[#5F6368]">{score}%</span>
       </div>
-      <div className="h-2 w-full bg-[#F1F3F4] rounded-full overflow-hidden">
+      <div className="h-1.5 sm:h-2 w-full bg-[#F1F3F4] rounded-full overflow-hidden">
         <div 
           className="h-full bg-[#4285F4] transition-all duration-1000 ease-out" 
           style={{ width: `${score}%` }}
@@ -231,14 +249,18 @@ function CategoryBar({ label, score }: { label: string, score: number }) {
 
 function StatCard({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) {
   return (
-    <div className="bg-white border border-[#F1F3F4] p-10 rounded-[32px] flex items-start gap-6 shadow-sm">
-      <div className="w-12 h-12 rounded-2xl bg-[#F8F9FA] flex items-center justify-center mt-1 text-[#4285F4]">
-        {icon}
+    <div className="bg-white border border-[#F1F3F4] p-6 sm:p-10 rounded-[24px] sm:rounded-[32px] flex items-start gap-4 sm:gap-6 shadow-sm">
+      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-[#F8F9FA] flex items-center justify-center mt-1 text-[#4285F4]">
+        {React.isValidElement(icon) &&
+          React.cloneElement(icon as React.ReactElement<any>, {
+            size: 18,
+            className: "sm:w-5 sm:h-5",
+          })}
       </div>
       <div>
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6368] mb-2">{label}</p>
-        <div className="text-3xl font-black text-[#202124] tracking-tight">{value}</div>
+        <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-[#5F6368] mb-1 sm:mb-2">{label}</p>
+        <div className="text-2xl sm:text-3xl font-black text-[#202124] tracking-tight">{value}</div>
       </div>
     </div>
-  )
+  );
 }

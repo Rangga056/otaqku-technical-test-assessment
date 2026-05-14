@@ -2,12 +2,13 @@ import { create } from 'zustand'
 
 interface QuizState {
   currentQuestionIndex: number
-  answers: Record<string, string> // questionId -> optionId
+  answers: Record<string, string | string[]> // questionId -> optionId or optionIds
   startTime: number | null
   isFinished: boolean
   
   // Actions
   setAnswer: (questionId: string, optionId: string) => void
+  toggleAnswer: (questionId: string, optionId: string) => void
   nextQuestion: () => void
   prevQuestion: () => void
   startQuiz: () => void
@@ -25,6 +26,22 @@ export const useQuizStore = create<QuizState>((set) => ({
     set((state) => ({
       answers: { ...state.answers, [questionId]: optionId }
     })),
+
+  toggleAnswer: (questionId, optionId) =>
+    set((state) => {
+      const current = state.answers[questionId]
+      let next: string[] = Array.isArray(current) ? [...current] : []
+      
+      if (next.includes(optionId)) {
+        next = next.filter(id => id !== optionId)
+      } else {
+        next.push(optionId)
+      }
+      
+      return {
+        answers: { ...state.answers, [questionId]: next }
+      }
+    }),
 
   nextQuestion: () => 
     set((state) => ({ 

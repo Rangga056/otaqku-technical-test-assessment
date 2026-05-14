@@ -24,6 +24,7 @@ export const QuestionSchema = z.object({
   question_text: z.string(),
   points: z.number().int(),
   order_index: z.number().int(),
+  type: z.enum(["single", "multiple"]).default("single"),
   options: z.array(OptionSchema),
 })
 
@@ -52,7 +53,7 @@ export type QuizAttempt = z.infer<typeof QuizAttemptSchema>
 
 export const SubmissionSchema = z.object({
   quiz_id: z.string().uuid(),
-  answers: z.record(z.string().uuid(), z.string().uuid()), // question_id -> selected_option_id
+  answers: z.record(z.string().uuid(), z.union([z.string().uuid(), z.array(z.string().uuid())])), // question_id -> selected_option_id(s)
 })
 
 export type Submission = z.infer<typeof SubmissionSchema>

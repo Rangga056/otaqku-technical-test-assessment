@@ -47,17 +47,17 @@ export function HomeClient({ session }: { session: Session | null }) {
       />
 
       {/* Hero Section */}
-      <section className="relative pt-24 pb-32 overflow-hidden lg:pt-32 lg:pb-40">
+      <section className="relative pt-16 pb-24 overflow-hidden lg:pt-32 lg:pb-40">
         <div className="container mx-auto px-6 relative z-10 max-w-7xl">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             {/* Left Content */}
-            <div className="text-left space-y-8 animate-in fade-in slide-in-from-left duration-1000">
-              <h1 className="text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter text-[#202124] leading-[0.95]">
+            <div className="text-left space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-left duration-1000">
+              <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter text-[#202124] leading-[0.95]">
                 Precision in <br />
                 Knowledge. <br />
                 <span className="text-[#4285F4]">Minimalist by Design.</span>
               </h1>
-              <p className="text-xl md:text-2xl text-[#5F6368] leading-relaxed max-w-xl">
+              <p className="text-lg sm:text-xl md:text-2xl text-[#5F6368] leading-relaxed max-w-xl">
                 A rigorous platform for interactive assessments and analytics.
                 Engineered with Swiss principles to reduce cognitive load and
                 prioritize absolute clarity.
@@ -65,7 +65,7 @@ export function HomeClient({ session }: { session: Session | null }) {
               <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
                 <Button
                   asChild
-                  className="h-14 px-10 text-lg rounded-xl shadow-lg bg-[#4285F4] hover:bg-[#1A73E8] transition-all transform hover:scale-[1.02]"
+                  className="w-full sm:w-auto h-12 sm:h-14 px-8 sm:px-10 text-base sm:text-lg rounded-xl shadow-lg bg-[#4285F4] hover:bg-[#1A73E8] transition-all transform hover:scale-[1.02]"
                 >
                   <Link href={session ? "/dashboard" : "/auth/signup"}>
                     {session ? "Enter Workspace" : "Start Assessment"}
@@ -74,7 +74,7 @@ export function HomeClient({ session }: { session: Session | null }) {
                 <Button
                   variant="outline"
                   asChild
-                  className="h-14 px-10 text-lg rounded-xl bg-white/50 backdrop-blur border-[#DADCE0]"
+                  className="w-full sm:w-auto h-12 sm:h-14 px-8 sm:px-10 text-base sm:text-lg rounded-xl bg-white/50 backdrop-blur border-[#DADCE0]"
                 >
                   <Link href="/quiz">View Documentation</Link>
                 </Button>
@@ -104,7 +104,7 @@ export function HomeClient({ session }: { session: Session | null }) {
               and analytics.
             </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             <FeatureCard
               icon={<Zap className="text-[#4285F4]" size={28} />}
               title="Instant Feedback"
@@ -164,12 +164,12 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <div className="stitch-card p-10 hover:border-[#4285F4] transition-all duration-300">
-      <div className="w-14 h-14 rounded-2xl bg-[#F8F9FA] flex items-center justify-center mb-8">
+    <div className="stitch-card p-8 sm:p-10 hover:border-[#4285F4] transition-all duration-300">
+      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-[#F8F9FA] flex items-center justify-center mb-6 sm:mb-8">
         {icon}
       </div>
-      <h3 className="text-xl font-medium mb-4 text-[#202124]">{title}</h3>
-      <p className="text-[#5F6368] leading-relaxed">{description}</p>
+      <h3 className="text-lg sm:text-xl font-medium mb-3 sm:mb-4 text-[#202124]">{title}</h3>
+      <p className="text-sm sm:text-base text-[#5F6368] leading-relaxed">{description}</p>
     </div>
   );
 }
