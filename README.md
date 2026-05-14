@@ -46,37 +46,37 @@ The application uses the **Next.js 15 App Router** architecture, leveraging a hy
 
 1. **Clone & Install**:
 
-    ```bash
-    git clone [https://github.com/Rangga056/otaqku-technical-test-assessment]
-    cd otaqku-technical-test
-    bun install
-    ```
+   ```bash
+   git clone https://github.com/Rangga056/otaqku-technical-test-assessment
+   cd otaqku-technical-test
+   bun install
+   ```
 
 2. **Environment Configuration**:
-    Create a `.env.local` file:
+   Create a `.env.local` file:
 
-    ```env
-    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-    SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-    AUTH_SECRET=your_next_auth_secret
-    ```
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+   AUTH_SECRET=your_next_auth_secret
+   ```
 
 3. **Database Setup**:
-    Initialize your Supabase project with the provided schema and seed data:
+   Initialize your Supabase project with the provided schema and seed data:
 
-    ```bash
-    # Apply initial schema
-    supabase migration up
-    # Seed with 40+ questions across 4 categories
-    psql -f supabase/seed.sql [your_connection_string]
-    ```
+   ```bash
+   # Apply initial schema
+   supabase migration up
+   # Seed with 40+ questions across 4 categories
+   psql -f supabase/seed.sql [your_connection_string]
+   ```
 
 4. **Run Development Server**:
 
-    ```bash
-    bun dev
-    ```
+   ```bash
+   bun dev
+   ```
 
 ## ⚖️ Any known limitations, shortcuts taken or tradeoff made
 
