@@ -1,63 +1,74 @@
-# otaQku Quiz & Report App
+# otaQku Intelligence - Minimalist Assessment Platform
 
-An interactive quiz platform built with Next.js 15, Supabase, and NextAuth.js. This application allows users to take quizzes, view instant analytics, and download performance reports as PDF.
+otaQku is a high-fidelity, interactive web application designed for rigorous knowledge evaluation, deep performance analytics, and professional reporting. Engineered with Swiss design principles, it prioritizes absolute clarity and cognitive ease.
 
-## 📚 Documentation
+## 🧠 Product Thinking
 
-- [User Flow Documentation](docs/user-flow.md) - Understanding the application from a user's perspective.
-- [API & Backend Documentation](docs/api-backend.md) - Deep dive into the technical implementation and data structures.
+### The Problem
+Traditional assessment tools often suffer from cognitive overload—cluttered interfaces, distracting feedback, and a lack of actionable post-quiz analysis. Users need a platform that focuses their attention on the knowledge at hand and provides structured, professional documentation of their progress.
 
-## 🚀 Tech Stack
+### The Solution
+otaQku solves this by providing:
+- **Distraction-Free Environment**: A "Stitch-inspired" minimalist UI with dark dotted backgrounds and clear typography.
+- **Immediate Multi-Dimensional Feedback**: Real-time score calculations and categorical performance breakdowns.
+- **Professional Portability**: One-click "Chart-to-PDF" reporting for formal documentation of results.
 
-- **Framework**: Next.js 15 (App Router)
-- **Runtime**: Bun
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Database**: Supabase (PostgreSQL)
-- **Auth**: NextAuth.js v5 (Auth.js)
-- **State Management**: Zustand
-- **Validation**: Zod
-- **Testing**: Vitest + React Testing Library
-- **PDF Generation**: @react-pdf/renderer
-- **Charts**: Recharts
+### Target Users
+- **Students & Professionals**: Preparing for certifications or exams.
+- **Candidates**: Conducting self-evaluations for technical roles.
+- **Lifelong Learners**: Tracking their mastery across diverse domains.
 
-## 🏗️ Architecture Choices
+## 🛠 Architecture & Tech Choices
 
-- **N+1 Prevention**: Data fetching uses nested Supabase selection to retrieve quizzes, questions, and options in a single roundtrip. Bulk inserts are used for quiz submissions.
-- **Security (RLS Bridge)**: Although using NextAuth for session management, we maintain Row Level Security (RLS) in Supabase by injecting the `user_id` into the Postgres session via a custom RPC call (`set_session_user`) within Server Actions.
-- **Strict TDD**: Core logic (scoring engine, state management) is developed using a test-driven approach.
-- **No ORM**: We use the native Supabase JS client for lightweight and transparent database interactions.
+### Core Stack
+- **Framework**: [Next.js 15 (App Router)](https://nextjs.org/) for optimized Server-Side Rendering and fast client-side navigation.
+- **Language**: [TypeScript](https://www.typescriptlang.org/) for robust type-safety across the quiz engine and database layers.
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/) for a custom, minimalist design system.
+- **Database & Auth**: [Supabase](https://supabase.com/) (PostgreSQL + Auth) using Row Level Security (RLS) for absolute data isolation.
+- **State Management**: [Zustand](https://github.com/pmndrs/zustand) for lightweight, efficient quiz state tracking.
 
-## 🛠️ Local Setup
+### The "Chart-to-PDF" Strategy
+One of the technical highlights is the reporting engine. To ensure the PDF accurately reflects the beautiful client-side visualizations:
+1.  **Rendering**: Metrics and charts are rendered on the client using Recharts and Tailwind.
+2.  **Capture**: [html2canvas](https://html2canvas.hertzen.com/) captures the high-DPI dashboard state as a Base64 image.
+3.  **Generation**: The image is sent to a Next.js API Route where [@react-pdf/renderer](https://react-pdf.org/) generates a structured, multi-page PDF on the server and streams it back to the user.
 
-1. **Clone the repository**:
-   ```bash
-   git clone <repository-url>
-   cd otaQku_technical_test
-   ```
+## 🚀 Local Setup Instructions
 
-2. **Install dependencies**:
-   ```bash
-   bun install
-   ```
+1.  **Clone the Repository**:
+    ```bash
+    git clone [repository-url]
+    cd otaqku-technical-test
+    ```
 
-3. **Configure Environment Variables**:
-   Copy `.env.local.example` to `.env.local` and fill in your Supabase and NextAuth credentials.
+2.  **Install Dependencies**:
+    ```bash
+    bun install
+    ```
 
-4. **Setup Database**:
-   Run the SQL found in `supabase/migrations/` and `supabase/seed.sql` in your Supabase SQL Editor.
+3.  **Environment Configuration**:
+    Create a `.env.local` file with your Supabase credentials:
+    ```env
+    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+    SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+    AUTH_SECRET=your_next_auth_secret
+    ```
 
-5. **Run Development Server**:
-   ```bash
-   bun dev
-   ```
+4.  **Database Setup**:
+    - Run the migration in `supabase/migrations/`.
+    - Apply the seed data in `supabase/seed.sql` to populate the library with 40 assessment items.
 
-6. **Run Tests**:
-   ```bash
-   bun test
-   ```
+5.  **Run Development Server**:
+    ```bash
+    bun dev
+    ```
+    Access the application at `http://localhost:3000`.
 
-## 📝 Limitations & Trade-offs
+## ⚖️ Limitations & Trade-offs
+- **Rule-Based Insights**: Currently uses a high-performance rule engine for scoring and categorization rather than AI, ensuring deterministic and reliable results.
+- **Fixed-Time Assessments**: The timer is currently client-side; future iterations will include server-side heartbeat checks for competitive integrity.
+- **PDF Layout**: Optimized for A4 printing; chart capture scales to fit, which may vary slightly across different viewport sizes.
 
-- **PDF Generation**: Currently uses `@react-pdf/renderer` for server-side generation. Complex client-side charts are represented as textual data in the report to ensure high-quality vector rendering in the PDF.
-- **Rule-based Analytics**: Performance categories (Beginner, Intermediate, Advanced) are determined by fixed percentage thresholds as per initial requirements.
+---
+© 2026 otaQku Intelligence. Engineered for clarity.

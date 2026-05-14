@@ -1,63 +1,49 @@
 "use client"
 
-import { useState } from "react"
+import React from "react"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 
-type ModalType = "privacy" | "terms" | null
+interface LegalModalProps {
+  isOpen: boolean
+  onClose: () => void
+  title: string
+  content: string
+}
 
-export function LegalModal() {
-  const [type, setType] = useState<ModalType>(null)
-
-  const content = {
-    privacy: {
-      title: "Privacy Policy",
-      body: "At otaQku, we prioritize your data security. We only collect essential information required for authentication (via NextAuth and Google) and performance tracking. Your quiz data is isolated using Row Level Security (RLS) and is never shared with third parties. We use industry-standard encryption for all data at rest and in transit."
-    },
-    terms: {
-      title: "Terms of Service",
-      body: "By using otaQku, you agree to use the platform for educational and evaluation purposes. You maintain ownership of your data, but grant us the right to process it to provide analytics and reports. We are not responsible for any inaccuracies in quiz content or performance metrics. Misuse of the platform may result in account suspension."
-    }
-  }
-
-  if (!type) {
-    return (
-      <div className="flex gap-8">
-        <button 
-          onClick={() => setType("privacy")}
-          className="hover:text-[#202124] transition-colors"
-        >
-          Privacy Policy
-        </button>
-        <button 
-          onClick={() => setType("terms")}
-          className="hover:text-[#202124] transition-colors"
-        >
-          Terms of Service
-        </button>
-      </div>
-    )
-  }
+export function LegalModal({ isOpen, onClose, title, content }: LegalModalProps) {
+  if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div 
-        className="absolute inset-0 bg-[#202124]/40 backdrop-blur-sm animate-in fade-in duration-300" 
-        onClick={() => setType(null)}
+        className="absolute inset-0 bg-[#202124]/40 backdrop-blur-sm" 
+        onClick={onClose}
       />
-      <div className="relative w-full max-w-lg bg-white rounded-3xl p-10 stitch-card shadow-2xl animate-in zoom-in-95 fade-in duration-300">
-        <div className="flex justify-between items-start mb-6">
-          <h2 className="text-2xl font-medium text-[#202124]">{content[type].title}</h2>
-          <Button variant="ghost" onClick={() => setType(null)} className="p-2 h-10 w-10 rounded-full">
+      <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+        <div className="flex items-center justify-between p-6 border-b border-[#DADCE0]">
+          <h2 className="text-xl font-medium text-[#202124]">{title}</h2>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={onClose} 
+            className="rounded-full hover:bg-[#F8F9FA]"
+          >
             <X size={20} />
           </Button>
         </div>
-        <p className="text-[#5F6368] leading-relaxed mb-8">
-          {content[type].body}
-        </p>
-        <Button onClick={() => setType(null)} className="w-full rounded-xl">
-          Accept & Close
-        </Button>
+        <div className="p-8 max-h-[70vh] overflow-y-auto">
+          <div className="prose prose-sm max-w-none text-[#5F6368] space-y-4">
+            {content.split('\n').map((line, i) => (
+              <p key={i}>{line}</p>
+            ))}
+          </div>
+        </div>
+        <div className="p-6 bg-[#F8F9FA] border-t border-[#DADCE0] flex justify-end">
+          <Button onClick={onClose} className="rounded-xl px-8">
+            Close
+          </Button>
+        </div>
       </div>
     </div>
   )

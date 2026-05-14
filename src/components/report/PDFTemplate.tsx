@@ -1,4 +1,4 @@
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer'
+import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer'
 
 const styles = StyleSheet.create({
   page: { padding: 48, fontFamily: 'Helvetica', backgroundColor: '#FFFFFF' },
@@ -15,6 +15,20 @@ const styles = StyleSheet.create({
   section: { marginBottom: 24 },
   sectionTitle: { fontSize: 16, fontWeight: 'bold', color: '#202124', marginBottom: 16, paddingBottom: 8, borderBottom: '1pt solid #DADCE0' },
   
+  chartContainer: {
+    marginVertical: 20,
+    padding: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    border: '1pt solid #F1F3F4',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  chartImage: {
+    width: 400,
+    height: 300,
+  },
+
   tableHeader: { flexDirection: 'row', backgroundColor: '#F8F9FA', padding: 12, borderRadius: 4, marginBottom: 8 },
   tableRow: { flexDirection: 'row', padding: 12, borderBottomWidth: 1, borderBottomColor: '#F1F3F4' },
   tableColNum: { width: '10%', fontSize: 10, color: '#5F6368' },
@@ -28,7 +42,7 @@ const styles = StyleSheet.create({
   footerText: { fontSize: 8, color: '#999' }
 })
 
-export function PDFReport({ attempt }: { attempt: any }) {
+export function PDFReport({ attempt, chartImage }: { attempt: any, chartImage?: string }) {
   const percentage = Math.round((attempt.total_score / attempt.max_score) * 100)
 
   return (
@@ -53,6 +67,15 @@ export function PDFReport({ attempt }: { attempt: any }) {
             <Text style={styles.statValue}>{attempt.total_score}/{attempt.max_score}</Text>
           </View>
         </View>
+
+        {chartImage && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Performance Visualization</Text>
+            <View style={styles.chartContainer}>
+              <Image src={chartImage} style={styles.chartImage} />
+            </View>
+          </View>
+        )}
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Detailed Breakdown</Text>
@@ -85,3 +108,4 @@ export function PDFReport({ attempt }: { attempt: any }) {
     </Document>
   )
 }
+

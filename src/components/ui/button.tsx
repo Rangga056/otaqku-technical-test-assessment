@@ -13,7 +13,7 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'default', asChild = false, ...props }, ref) => {
+  ({ className, variant = 'default', asChild = false, children, ...props }, ref) => {
     const variants = {
       default: "bg-[#4285F4] text-white hover:bg-[#1A73E8] shadow-sm",
       outline: "border border-[#DADCE0] bg-transparent text-[#202124] hover:bg-[#F8F9FA]",
@@ -27,10 +27,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       className
     )
 
-    if (asChild && React.isValidElement(props.children)) {
-      return React.cloneElement(props.children as React.ReactElement, {
+    if (asChild && React.isValidElement(children)) {
+      return React.cloneElement(children as React.ReactElement, {
         ...props,
-        className: cn(classes, (props.children as React.ReactElement).props.className),
+        className: cn(classes, (children as React.ReactElement).props.className),
       })
     }
 
@@ -39,7 +39,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={classes}
         ref={ref}
         {...props}
-      />
+      >
+        {children}
+      </button>
     )
   }
 )

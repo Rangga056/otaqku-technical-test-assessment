@@ -36,8 +36,10 @@ export default async function ResultPage({ params }: PageProps) {
   const percentile = await calculatePercentile(attempt.quiz_id, attempt.total_score)
 
   return (
-    <main className="container mx-auto px-6 py-12 flex-1">
-      <ResultDashboard attempt={attempt} percentile={percentile} />
+    <main className="min-h-screen bg-[#121212] bg-[radial-gradient(#262626_1px,transparent_1px)] [background-size:20px_20px] py-16 px-6">
+      <div className="max-w-7xl mx-auto bg-white rounded-[56px] shadow-2xl p-12 md:p-20">
+        <ResultDashboard attempt={attempt} percentile={percentile} />
+      </div>
     </main>
   )
 }

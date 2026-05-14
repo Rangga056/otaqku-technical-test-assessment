@@ -14,8 +14,10 @@ export default async function QuizPage({ params }: PageProps) {
   try {
     const quiz = await getQuiz(id)
     return (
-      <main className="container mx-auto px-4 py-12 flex-1 flex flex-col justify-center">
-        <QuizClient quiz={quiz} />
+      <main className="min-h-screen bg-[#121212] bg-[radial-gradient(#262626_1px,transparent_1px)] [background-size:20px_20px] flex items-center justify-center p-6">
+        <div className="w-full max-w-6xl bg-white rounded-[48px] shadow-2xl p-12 md:p-20 min-h-[85vh] flex flex-col">
+          <QuizClient quiz={quiz} />
+        </div>
       </main>
     )
   } catch (error) {
