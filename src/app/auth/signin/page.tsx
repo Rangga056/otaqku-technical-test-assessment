@@ -6,8 +6,10 @@ import Link from "next/link"
 import { ArrowLeft, Mail } from "lucide-react"
 import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { Suspense } from "react"
+import { SigninSkeleton } from "@/components/auth/SigninSkeleton"
 
-export default function SigninPage() {
+function SigninContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const message = searchParams.get("message")
@@ -126,5 +128,13 @@ export default function SigninPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function SigninPage() {
+  return (
+    <Suspense fallback={<SigninSkeleton />}>
+      <SigninContent />
+    </Suspense>
   )
 }

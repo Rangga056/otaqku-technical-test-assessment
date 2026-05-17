@@ -1,101 +1,106 @@
-"use client"
+"use client";
 
-import { useEffect, useState, useCallback } from "react"
-import { Quiz } from "@/lib/validations"
-import { useQuizStore } from "@/store/useQuizStore"
-import { submitQuizAction } from "@/app/actions/quiz"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Timer, ArrowLeft, ArrowRight } from "lucide-react"
+import { useEffect, useState, useCallback } from "react";
+import { Quiz } from "@/lib/validations";
+import { useQuizStore } from "@/store/useQuizStore";
+import { submitQuizAction } from "@/app/actions/quiz";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Timer, ArrowLeft, ArrowRight, Check } from "lucide-react";
 
 export function QuizClient({ quiz }: { quiz: Quiz }) {
-  const router = useRouter()
-  const { 
-    currentQuestionIndex, 
-    answers, 
-    setAnswer, 
+  const router = useRouter();
+  const {
+    currentQuestionIndex,
+    answers,
+    isFinished,
+    setAnswer,
     toggleAnswer,
-    nextQuestion, 
-    prevQuestion, 
+    nextQuestion,
+    prevQuestion,
     startQuiz,
-    finishQuiz
-  } = useQuizStore()
-  
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [timeLeft, setTimeLeft] = useState(600) // 10 minutes for 10 questions
+    finishQuiz,
+  } = useQuizStore();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(600); // 10 minutes for 10 questions
 
   useEffect(() => {
-    startQuiz()
-  }, [startQuiz])
+    if (!isFinished) {
+      startQuiz();
+    }
+  }, [startQuiz, isFinished]);
 
   // Simple timer implementation
   useEffect(() => {
-    if (timeLeft <= 0) return
+    if (timeLeft <= 0 || isFinished) return;
     const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1)
-    }, 1000)
-    return () => clearInterval(timer)
-  }, [timeLeft])
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft, isFinished]);
 
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
-  }
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
 
-  const currentQuestion = quiz.questions[currentQuestionIndex]
-  const isLastQuestion = currentQuestionIndex === quiz.questions.length - 1
+  const currentQuestion = quiz.questions[currentQuestionIndex];
+  const isLastQuestion = currentQuestionIndex === quiz.questions.length - 1;
 
   const handleSubmit = useCallback(async () => {
-    setIsSubmitting(true)
+    if (isSubmitting || isFinished) return;
+    setIsSubmitting(true);
     try {
       const { attemptId } = await submitQuizAction({
         quiz_id: quiz.id,
-        answers: answers
-      })
-      finishQuiz()
-      router.push(`/quiz/result/${attemptId}`)
+        answers: answers,
+      });
+      finishQuiz();
+      router.push(`/quiz/result/${attemptId}`);
     } catch (error) {
-      console.error(error)
-      alert("Failed to submit quiz. Please try again.")
-    } finally {
-      setIsSubmitting(false)
+      console.error(error);
+      setIsSubmitting(false);
+      alert("Failed to submit quiz. Please try again.");
     }
-  }, [quiz.id, answers, finishQuiz, router])
+  }, [quiz.id, answers, isFinished, isSubmitting, finishQuiz, router]);
 
-  if (!currentQuestion) return null
+  if (!currentQuestion) return null;
 
   const isSelected = (optionId: string) => {
-    const currentAnswer = answers[currentQuestion.id]
+    const currentAnswer = answers[currentQuestion.id];
     if (Array.isArray(currentAnswer)) {
-      return currentAnswer.includes(optionId)
+      return currentAnswer.includes(optionId);
     }
-    return currentAnswer === optionId
-  }
+    return currentAnswer === optionId;
+  };
 
   const handleOptionClick = (optionId: string) => {
-    if (currentQuestion.type === 'multiple') {
-      toggleAnswer(currentQuestion.id, optionId)
+    if (currentQuestion.type === "multiple") {
+      toggleAnswer(currentQuestion.id, optionId);
     } else {
-      setAnswer(currentQuestion.id, optionId)
+      setAnswer(currentQuestion.id, optionId);
     }
-  }
+  };
 
   const hasAnswered = () => {
-    const currentAnswer = answers[currentQuestion.id]
+    const currentAnswer = answers[currentQuestion.id];
     if (Array.isArray(currentAnswer)) {
-      return currentAnswer.length > 0
+      return currentAnswer.length > 0;
     }
-    return !!currentAnswer
-  }
+    return !!currentAnswer;
+  };
 
   return (
     <div className="w-full h-full flex flex-col max-w-5xl mx-auto">
       {/* Top Progress Bar - Full Width */}
       <div className="w-full h-1 md:h-1.5 bg-[#F1F3F4] rounded-full overflow-hidden mb-8 md:mb-12">
-        <div 
-          className="h-full bg-[#4285F4] transition-all duration-700 ease-in-out" 
-          style={{ width: `${((currentQuestionIndex + 1) / quiz.questions.length) * 100}%` }}
+        <div
+          className="h-full bg-[#4285F4] transition-all duration-700 ease-in-out"
+          style={{
+            width: `${((currentQuestionIndex + 1) / quiz.questions.length) * 100}%`,
+          }}
         />
       </div>
 
@@ -105,10 +110,12 @@ export function QuizClient({ quiz }: { quiz: Quiz }) {
             Question {currentQuestionIndex + 1} / {quiz.questions.length}
           </span>
           <span className="text-[10px] font-medium text-[#4285F4] uppercase tracking-wider">
-            {currentQuestion.type === 'multiple' ? 'Multiple Choice (Select many)' : 'Single Choice'}
+            {currentQuestion.type === "multiple"
+              ? "Multiple Choice (Select many)"
+              : "Single Choice"}
           </span>
         </div>
-        
+
         <div className="flex items-center gap-2 bg-[#F8F9FA] px-3 md:px-4 py-1.5 md:py-2 rounded-full border border-[#DADCE0]">
           <Timer size={14} className="text-[#202124] md:w-4 md:h-4" />
           <span className="text-xs md:text-sm font-bold text-[#202124] tabular-nums">
@@ -124,7 +131,7 @@ export function QuizClient({ quiz }: { quiz: Quiz }) {
 
         <div className="w-full space-y-3 md:space-y-4 mb-10 md:mb-20">
           {currentQuestion.options.map((option) => {
-            const selected = isSelected(option.id)
+            const selected = isSelected(option.id);
             return (
               <button
                 key={option.id}
@@ -135,24 +142,31 @@ export function QuizClient({ quiz }: { quiz: Quiz }) {
                     : "border-[#F1F3F4] hover:border-[#DADCE0] bg-white"
                 }`}
               >
-                <div className={`mt-0.5 sm:mt-1 w-5 h-5 md:w-6 md:h-6 ${currentQuestion.type === 'multiple' ? 'rounded-md' : 'rounded-full'} border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-                  selected ? "border-[#4285F4] bg-[#4285F4]" : "border-[#DADCE0] group-hover:border-[#5F6368]"
-                }`}>
-                  {selected && (
-                    currentQuestion.type === 'multiple' 
-                      ? <Check size={14} className="text-white" />
-                      : <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-white" />
-                  )}
+                <div
+                  className={`mt-0.5 sm:mt-1 w-5 h-5 md:w-6 md:h-6 ${currentQuestion.type === "multiple" ? "rounded-md" : "rounded-full"} border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                    selected
+                      ? "border-[#4285F4] bg-[#4285F4]"
+                      : "border-[#DADCE0] group-hover:border-[#5F6368]"
+                  }`}
+                >
+                  {selected &&
+                    (currentQuestion.type === "multiple" ? (
+                      <Check size={14} className="text-white" />
+                    ) : (
+                      <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-white" />
+                    ))}
                 </div>
                 <div className="flex-1">
-                  <p className={`text-sm sm:text-xl font-medium leading-relaxed transition-colors ${
-                    selected ? "text-[#202124]" : "text-[#5F6368]"
-                  }`}>
+                  <p
+                    className={`text-sm sm:text-xl font-medium leading-relaxed transition-colors ${
+                      selected ? "text-[#202124]" : "text-[#5F6368]"
+                    }`}
+                  >
                     {option.option_text}
                   </p>
                 </div>
               </button>
-            )
+            );
           })}
         </div>
       </div>
@@ -171,10 +185,10 @@ export function QuizClient({ quiz }: { quiz: Quiz }) {
         {isLastQuestion ? (
           <Button
             onClick={handleSubmit}
-            disabled={!hasAnswered() || isSubmitting}
+            disabled={!hasAnswered() || isSubmitting || isFinished}
             className="bg-[#4285F4] hover:bg-[#1A73E8] text-white px-6 md:px-10 h-12 md:h-14 rounded-xl md:rounded-2xl text-sm md:text-base font-bold shadow-lg shadow-blue-200 transition-all hover:scale-[1.02]"
           >
-            {isSubmitting ? "..." : "Complete Evaluation"}
+            {isSubmitting ? "Submitting..." : "Complete Evaluation"}
           </Button>
         ) : (
           <Button
@@ -188,5 +202,5 @@ export function QuizClient({ quiz }: { quiz: Quiz }) {
         )}
       </div>
     </div>
-  )
+  );
 }

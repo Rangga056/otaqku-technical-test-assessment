@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import confetti from 'canvas-confetti'
 import { Clock, MousePointer2, Trophy, CheckCircle2, XCircle, Download, Loader2 } from 'lucide-react'
-import html2canvas from 'html2canvas'
 
 interface ResultDashboardProps {
   attempt: any
@@ -14,7 +13,6 @@ interface ResultDashboardProps {
 
 export function ResultDashboard({ attempt, percentile }: ResultDashboardProps) {
   const [isExporting, setIsExporting] = useState(false)
-  const dashboardRef = useRef<HTMLDivElement>(null)
   const percentage = Math.round((attempt.total_score / attempt.max_score) * 100)
   
   // Achievement mapping based on score
@@ -27,23 +25,10 @@ export function ResultDashboard({ attempt, percentile }: ResultDashboardProps) {
   const achievement = getAchievement(percentage)
 
   const handleDownloadPDF = async () => {
-    if (!dashboardRef.current) return
-    
     setIsExporting(true)
     try {
-      // Capture the dashboard area (excluding buttons)
-      const canvas = await html2canvas(dashboardRef.current, {
-        backgroundColor: '#ffffff',
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      })
-      const chartImage = canvas.toDataURL('image/png')
-
       const response = await fetch(`/api/report/${attempt.id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chartImage }),
+        method: 'GET', // Changed to GET since we don't need to send a screenshot anymore
       })
 
       if (!response.ok) throw new Error('Export failed')
@@ -111,7 +96,7 @@ export function ResultDashboard({ attempt, percentile }: ResultDashboardProps) {
         </div>
       </div>
 
-      <div ref={dashboardRef} className="space-y-8 md:space-y-12 bg-white rounded-[24px] md:rounded-[40px] p-1 sm:p-1.5 md:p-2 border border-[#F1F3F4]">
+      <div className="space-y-8 md:space-y-12 bg-white rounded-[24px] md:rounded-[40px] p-1 sm:p-1.5 md:p-2 border border-[#F1F3F4]">
         <div className="grid lg:grid-cols-3 gap-6 md:gap-8 p-4 md:p-10">
           <div className="lg:col-span-2 bg-white border border-[#F1F3F4] p-6 md:p-12 rounded-[24px] md:rounded-[32px]">
             <h2 className="text-xl md:text-2xl font-bold text-[#202124] mb-8 md:mb-12">Category Performance</h2>

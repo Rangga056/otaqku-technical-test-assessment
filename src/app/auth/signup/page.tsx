@@ -18,7 +18,7 @@ export default function SignupPage() {
           <p className="text-gray-500 text-sm">Start your precision learning journey today.</p>
         </div>
 
-        <form action={signupAction} className="space-y-6">
+        <form action={async (formData) => { await signupAction(formData) }} className="space-y-6">
           <div className="space-y-4">
             <div>
               <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Full Name</label>

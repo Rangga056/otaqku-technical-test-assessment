@@ -61,21 +61,37 @@ export async function submitQuizAction(formData: unknown) {
     .select("id")
     .single()
 
-  if (attemptError) throw new Error("Failed to save attempt")
+  if (attemptError) {
+    console.error("Supabase Error (Attempt):", attemptError)
+    throw new Error(`Failed to save attempt: ${attemptError.message}`)
+  }
 
-  // 4. Bulk insert answers
-  const answersToInsert = result.answerBreakdown.map((ans) => ({
-    attempt_id: attempt.id,
-    question_id: ans.questionId,
-    selected_option_id: ans.selectedOptionId,
-    is_correct: ans.isCorrect,
-  }))
+  // 4. Bulk insert answers (flatten multi-select into individual rows)
+  const answersToInsert: any[] = []
+  
+  result.answerBreakdown.forEach((ans) => {
+    const selectedIds = Array.isArray(ans.selectedOptionId) 
+      ? ans.selectedOptionId 
+      : [ans.selectedOptionId].filter(Boolean) as string[]
+
+    selectedIds.forEach(optionId => {
+      answersToInsert.push({
+        attempt_id: attempt.id,
+        question_id: ans.questionId,
+        selected_option_id: optionId,
+        is_correct: ans.isCorrect, // Note: This flag applies to the question result in this simplified schema
+      })
+    })
+  })
 
   const { error: answersError } = await authSupabase
     .from("attempt_answers")
     .insert(answersToInsert)
 
-  if (answersError) throw new Error("Failed to save answers")
+  if (answersError) {
+    console.error("Supabase Error (Answers):", answersError)
+    throw new Error(`Failed to save answers: ${answersError.message}`)
+  }
 
   revalidatePath("/dashboard")
   return { attemptId: attempt.id }

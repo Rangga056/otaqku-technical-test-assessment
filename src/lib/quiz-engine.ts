@@ -92,8 +92,8 @@ export function calculateScore(
   const { category, achievement } = getCategoryAndAchievement(percentage)
 
   return {
-    totalScore,
-    maxScore,
+    totalScore: Math.round(totalScore),
+    maxScore: Math.round(maxScore),
     percentage,
     category,
     achievement,
